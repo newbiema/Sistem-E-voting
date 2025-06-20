@@ -217,7 +217,7 @@ $persentasePemilih = $totalMahasiswa > 0 ? round(($totalPemilih / $totalMahasisw
           </div>
           
           <div class="hero-image">
-            <img src="https://cdn-icons-png.flaticon.com/512/1047/1047711.png" alt="Vote Illustration" 
+            <img src="../img/hmif.png" alt="Vote Illustration" 
                  class="w-full max-w-xs" />
           </div>
         </div>
@@ -264,65 +264,65 @@ $persentasePemilih = $totalMahasiswa > 0 ? round(($totalPemilih / $totalMahasisw
         </div>
       </div>
 
-      <!-- Hasil Voting -->
-      <section class="card p-6 mb-8 fade-in">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-          <div>
-            <h2 class="text-xl font-bold text-gray-800">Hasil Voting Sementara</h2>
-            <p class="text-gray-600 text-sm">Update terakhir: <?php echo date('d F Y, H:i'); ?></p>
-          </div>
-          <div class="mt-2 md:mt-0">
-            <div class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg flex items-center">
-              <i class="fas fa-chart-pie mr-2"></i>
-              <span>Total Suara: <span class="font-bold"><?php echo $totalPemilih; ?></span></span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Chart Container -->
-        <div class="chart-container mb-8">
-          <canvas id="resultsChart"></canvas>
-        </div>
-        
-        <!-- Progress Bars -->
-        <div class="space-y-6">
-          <?php
-          $candidates = mysqli_query($conn, "SELECT * FROM candidates");
-          $colors = ['#4f46e5', '#7c3aed', '#2563eb', '#10b981', '#f59e0b'];
-          $i = 0;
-          
-          while ($candidate = mysqli_fetch_assoc($candidates)):
-            $candidateId = $candidate['id'];
-            $voteCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as count FROM votes WHERE candidate_id = $candidateId"))['count'];
-            $percentage = $totalPemilih > 0 ? round(($voteCount / $totalPemilih) * 100, 1) : 0;
-          ?>
-          <div>
-            <div class="flex justify-between mb-2">
-              <span class="font-bold text-gray-800"><?php echo $candidate['nama_ketua']; ?> & <?php echo $candidate['nama_wakil']; ?></span>
-              <span class="font-bold"><?php echo $voteCount; ?> suara (<?php echo $percentage; ?>%)</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: <?php echo $percentage; ?>%; background: <?php echo $colors[$i % count($colors)]; ?>"></div>
-            </div>
-          </div>
-          <?php $i++; endwhile; ?>
-        </div>
-        
-        <!-- Statistik Pemilih -->
-        <div class="mt-8 pt-6 border-t border-gray-100">
-          <h3 class="font-bold text-gray-800 mb-4">Statistik Pemilih</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="card p-4">
-              <div class="text-2xl font-bold text-indigo-600 mb-1"><?php echo $persentasePemilih; ?>%</div>
-              <div class="text-gray-600">Tingkat Partisipasi</div>
-            </div>
-            <div class="card p-4">
-              <div class="text-2xl font-bold text-purple-600 mb-1"><?php echo $totalMahasiswa - $totalPemilih; ?></div>
-              <div class="text-gray-600">Belum Memilih</div>
-            </div>
-          </div>
-        </div>
-      </section>
+<!-- Hasil Voting -->
+<section class="card p-6 mb-8 fade-in">
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+    <div>
+      <h2 class="text-xl font-bold text-gray-800">Hasil Voting Sementara</h2>
+      <p class="text-gray-600 text-sm">Update terakhir: <span id="last-update"><?php echo date('d F Y, H:i'); ?></span></p>
+    </div>
+    <div class="mt-2 md:mt-0">
+      <div class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg flex items-center">
+        <i class="fas fa-chart-pie mr-2"></i>
+        <span>Total Suara: <span class="font-bold"><?php echo $totalPemilih; ?></span></span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Chart Container -->
+  <div class="chart-container mb-8">
+    <canvas id="resultsChart"></canvas>
+  </div>
+  
+  <!-- Progress Bars -->
+  <div class="space-y-6">
+    <?php
+    $candidates = mysqli_query($conn, "SELECT * FROM candidates");
+    $colors = ['#4f46e5', '#7c3aed', '#2563eb', '#10b981', '#f59e0b'];
+    $i = 0;
+    
+    while ($candidate = mysqli_fetch_assoc($candidates)):
+      $candidateId = $candidate['id'];
+      $voteCount = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as count FROM votes WHERE candidate_id = $candidateId"))['count'];
+      $percentage = $totalPemilih > 0 ? round(($voteCount / $totalPemilih) * 100, 1) : 0;
+    ?>
+    <div>
+      <div class="flex justify-between mb-2">
+        <span class="font-bold text-gray-800"><?php echo $candidate['nama_ketua']; ?> & <?php echo $candidate['nama_wakil']; ?></span>
+        <span class="font-bold"><?php echo $voteCount; ?> suara (<?php echo $percentage; ?>%)</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: <?php echo $percentage; ?>%; background: <?php echo $colors[$i % count($colors)]; ?>"></div>
+      </div>
+    </div>
+    <?php $i++; endwhile; ?>
+  </div>
+  
+  <!-- Statistik Pemilih -->
+  <div class="mt-8 pt-6 border-t border-gray-100">
+    <h3 class="font-bold text-gray-800 mb-4">Statistik Pemilih</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="card p-4">
+        <div class="text-2xl font-bold text-indigo-600 mb-1"><?php echo $persentasePemilih; ?>%</div>
+        <div class="text-gray-600">Tingkat Partisipasi</div>
+      </div>
+      <div class="card p-4">
+        <div class="text-2xl font-bold text-purple-600 mb-1"><?php echo $totalMahasiswa - $totalPemilih; ?></div>
+        <div class="text-gray-600">Belum Memilih</div>
+      </div>
+    </div>
+  </div>
+</section>
     <?php else: ?>
       <!-- Belum Vote - Daftar Kandidat -->
       <section class="mb-8">
@@ -417,13 +417,28 @@ $persentasePemilih = $totalMahasiswa > 0 ? round(($totalPemilih / $totalMahasisw
   </div>
 
   <script>
-document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
   <?php if ($sudahVote): ?>
-  // Pastikan Chart.js sudah dimuat
-  if (typeof Chart === 'undefined') {
-    console.error('Chart.js library not loaded!');
-    return;
+  // Perbarui waktu dengan zona waktu klien
+  function updateLocalTime() {
+    const now = new Date();
+    const options = { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric',
+      hour: '2-digit', 
+      minute: '2-digit',
+      timeZoneName: 'short'
+    };
+    const formattedTime = now.toLocaleString('id-ID', options);
+    document.getElementById('last-update').textContent = formattedTime;
   }
+  
+  // Perbarui waktu pertama kali
+  updateLocalTime();
+  
+  // Perbarui waktu setiap 1 menit
+  setInterval(updateLocalTime, 60000);
 
   // Elemen chart
   const ctx = document.getElementById('resultsChart').getContext('2d');

@@ -37,7 +37,7 @@ $candidates = mysqli_query($conn, "SELECT c.*, COUNT(v.id) AS total_suara FROM c
         <a href="create.php" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2">
           <i class="fas fa-plus"></i> Tambah Kandidat
         </a>
-        <a href="logout_admin.php" class="text-red-600 hover:text-red-700 text-sm font-semibold flex items-center gap-1">
+        <a href="logout.php" class="text-red-600 hover:text-red-700 text-sm font-semibold flex items-center gap-1">
           <i class="fas fa-sign-out-alt"></i> Logout
         </a>
       </div>
