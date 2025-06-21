@@ -28,150 +28,11 @@ $persentasePemilih = $totalMahasiswa > 0 ? round(($totalPemilih / $totalMahasisw
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">
+  <link rel="stylesheet" href="../css/view.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Perbaikan: Gunakan CDN yang valid untuk Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-dark: #4338ca;
-      --accent: #7c3aed;
-      --success: #10b981;
-      --warning: #f59e0b;
-    }
-    
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f9fafb;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    .hero {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: white;
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .hero::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(to right, rgba(0,0,0,0.2), rgba(0,0,0,0.05));
-    }
-    
-    .badge {
-      display: inline-block;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-    
-    .user-badge {
-      display: inline-flex;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-    
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      background: var(--primary);
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    
-    .btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn:active {
-      transform: translateY(1px);
-    }
-    
-    .candidate-photo {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .progress-bar {
-      height: 8px;
-      background: #e5e7eb;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      border-radius: 4px;
-    }
-    
-    @media (max-width: 768px) {
-      .hero-content {
-        flex-direction: column;
-        text-align: center;
-      }
-      
-      .hero-image {
-        margin-top: 20px;
-        max-width: 200px;
-      }
-      
-      .user-badges {
-        justify-content: center;
-      }
-    }
-    
-    .fade-in {
-      animation: fadeIn 0.5s ease-in;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Perbaikan: Tambahan untuk chart container */
-    .chart-container {
-      position: relative;
-      height: 250px;
-      width: 100%;
-    }
-  </style>
+
 </head>
 <body class="min-h-screen py-6 px-4 bg-gray-50">
   <div class="max-w-6xl mx-auto">
@@ -381,7 +242,7 @@ $persentasePemilih = $totalMahasiswa > 0 ? round(($totalPemilih / $totalMahasisw
                 <div class="text-center text-sm text-gray-500 mb-2">
                   <i class="fas fa-quote-left mr-1"></i> Visi & Misi
                 </div>
-                <p class="text-gray-700 text-sm line-clamp-3 italic">
+                <p class="text-center text-gray-700 text-sm line-clamp-3 italic">
                   "<?php echo htmlspecialchars($row['visi']); ?>"
                 </p>
               </div>

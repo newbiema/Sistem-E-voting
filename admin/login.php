@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       
       <!-- Footer text -->
       <p class="text-center text-sm text-gray-600 mt-8">
-        <a href="../user/login.php" class="text-primary font-medium hover:underline">
+        <a href="../login.php" class="text-primary font-medium hover:underline">
           <i class="fas fa-arrow-left mr-1"></i> Kembali ke halaman pemilih
         </a>
       </p>
