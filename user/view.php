@@ -149,7 +149,12 @@ $persentasePemilih = $totalMahasiswa > 0 ? round(($totalPemilih / $totalMahasisw
   <div class="space-y-6">
     <?php
     $candidates = mysqli_query($conn, "SELECT * FROM candidates");
-    $colors = ['#4f46e5', '#7c3aed', '#2563eb', '#10b981', '#f59e0b'];
+    $colors = [
+        'rgba(99, 241, 156, 0.8)',
+        'rgba(139, 92, 246, 0.8)',
+        'rgba(236, 72, 153, 0.8)',
+        'rgba(59, 130, 246, 0.8)'
+    ];
     $i = 0;
     
     while ($candidate = mysqli_fetch_assoc($candidates)):
@@ -313,7 +318,12 @@ $persentasePemilih = $totalMahasiswa > 0 ? round(($totalPemilih / $totalMahasisw
       .then(response => response.json())
       .then(data => {
         // Warna untuk chart
-        const colors = ['#4f46e5', '#7c3aed', '#2563eb', '#10b981', '#f59e0b'];
+        const colors = [
+        'rgba(99, 241, 156, 0.8)',
+        'rgba(139, 92, 246, 0.8)',
+        'rgba(236, 72, 153, 0.8)',
+        'rgba(59, 130, 246, 0.8)'
+        ];
         
         // Perbarui atau buat chart
         if (voteChart) {

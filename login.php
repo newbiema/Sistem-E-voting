@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/login.css">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
@@ -60,56 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
   </script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-    
-    * {
-      font-family: 'Poppins', sans-serif;
-    }
-    
-    .wave {
-      position: relative;
-    }
-    
-    .wave::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%234f46e5' fill-opacity='0.1' d='M0,160L48,149.3C96,139,192,117,288,133.3C384,149,480,203,576,197.3C672,192,768,128,864,106.7C960,85,1056,107,1152,112C1248,117,1344,107,1392,101.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-      background-size: cover;
-      background-position: bottom;
-      z-index: -1;
-      opacity: 0.7;
-    }
-    
-    .particle {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.3);
-      animation: float 6s infinite ease-in-out;
-      z-index: -1;
-    }
-    
-    .login-card {
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-      transition: transform 0.3s ease;
-    }
-    
-    .login-card:hover {
-      transform: translateY(-5px);
-    }
-    
-    .input-focus:focus {
-      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
-    }
-    
-    .admin-btn:hover i {
-      transform: translateX(5px);
-    }
-  </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-200 via-indigo-200 to-purple-200 flex items-center justify-center p-4 wave">
   <!-- Floating particles background -->
@@ -171,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- Footer text -->
       <p class="text-center text-sm text-gray-600 mt-8">
         Gunakan NIM aktif untuk login. <br class="hidden sm:inline">
-        Masalah login? <a href="#" class="text-primary font-medium hover:underline">Hubungi Admin</a>
+        Masalah login? <a href="whatsapp://send?text=Hallo Min, NIM saya belom kedaftar&phone=+6287892219615"class="text-primary font-medium hover:underline">Hubungi Admin</a>
       </p>
     </div>
   </div>

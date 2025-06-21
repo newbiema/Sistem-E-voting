@@ -1,0 +1,173 @@
+
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+    }
+    
+    .form-container {
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(79, 70, 229, 0.15);
+      overflow: hidden;
+    }
+    
+    .form-header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      padding: 2rem 2rem 1.5rem;
+      text-align: center;
+      color: white;
+    }
+    
+    .form-icon {
+      background: rgba(255, 255, 255, 0.2);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+    
+    .form-content {
+      padding: 2rem;
+      background: white;
+    }
+    
+    .input-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #4b5563;
+    }
+    
+    .input-group input, 
+    .input-group textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+    
+    .input-group input:focus, 
+    .input-group textarea:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+      outline: none;
+    }
+    
+    .file-input-container {
+      position: relative;
+      border: 2px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      background: #f8fafc;
+      transition: all 0.3s ease;
+    }
+    
+    .file-input-container:hover {
+      border-color: #4f46e5;
+      background: #f0f9ff;
+    }
+    
+    .file-input-container.dragover {
+      border-color: #4f46e5;
+      background: #e6f7ff;
+    }
+    
+    .file-input-label {
+      cursor: pointer;
+      display: block;
+    }
+    
+    .file-input-icon {
+      font-size: 2.5rem;
+      color: #4f46e5;
+      margin-bottom: 0.5rem;
+    }
+    
+    .file-input-text {
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+    
+    .file-input-btn {
+      background: #4f46e5;
+      color: white;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      display: inline-block;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .file-input-btn:hover {
+      background: #4338ca;
+    }
+    
+    .file-name {
+      display: block;
+      margin-top: 0.75rem;
+      color: #4f46e5;
+      font-weight: 500;
+    }
+    
+    .btn-submit {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 10px rgba(79, 70, 229, 0.3);
+    }
+    
+    .btn-back {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #4f46e5;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-back:hover {
+      color: #4338ca;
+      transform: translateX(-3px);
+    }
+    
+    .preview-container {
+      margin-top: 1rem;
+      text-align: center;
+      display: none;
+    }
+    
+    .preview-image {
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 10px;
+      border: 2px solid #e5e7eb;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }

@@ -32,34 +32,10 @@ $total_votes = mysqli_fetch_assoc($total_votes)['total'];
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">
+  <link rel="stylesheet" href="../css/admin_dashboard.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-    
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-    
-    .sidebar-link:hover {
-      background: linear-gradient(to right, #4f46e5, #7c3aed);
-      color: white;
-    }
-    .sidebar-link.active {
-      background: linear-gradient(to right, #4f46e5, #7c3aed);
-      color: white;
-    }
-    .candidate-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    }
-    .stats-card {
-      transition: all 0.3s ease;
-    }
-    .stats-card:hover {
-      transform: scale(1.03);
-    }
-  </style>
+
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex">
   <!-- Sidebar -->
@@ -221,7 +197,7 @@ $total_votes = mysqli_fetch_assoc($total_votes)['total'];
           <canvas id="votesChart"></canvas>
         </div>
       </div>
-      
+            
       <!-- Candidates Section -->
       <section>
         <div class="flex justify-between items-center mb-4">
@@ -336,7 +312,7 @@ $total_votes = mysqli_fetch_assoc($total_votes)['total'];
       const candidateNames = [];
       const votesData = [];
       const backgroundColors = [
-        'rgba(99, 102, 241, 0.8)',
+        'rgba(99, 241, 156, 0.8)',
         'rgba(139, 92, 246, 0.8)',
         'rgba(236, 72, 153, 0.8)',
         'rgba(59, 130, 246, 0.8)'

@@ -32,88 +32,9 @@ $not_voted = $total_voters - $voted_count;
   <title>Daftar Pemilih - Admin Panel</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-    
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-    
-    .sidebar-link:hover {
-      background: linear-gradient(to right, #4f46e5, #7c3aed);
-      color: white;
-    }
-    
-    .sidebar-link.active {
-      background: linear-gradient(to right, #4f46e5, #7c3aed);
-      color: white;
-    }
-    
-    .stats-card {
-      transition: all 0.3s ease;
-    }
-    
-    .stats-card:hover {
-      transform: scale(1.03);
-    }
-    
-    .voter-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-    
-    .voter-table th {
-      background-color: #f3f4f6;
-      text-align: left;
-      padding: 12px 16px;
-      font-weight: 600;
-      color: #4b5563;
-    }
-    
-    .voter-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    
-    .voter-table tr:hover td {
-      background-color: #f9fafb;
-    }
-    
-    .status-badge {
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-    
-    .voted {
-      background-color: #dcfce7;
-      color: #15803d;
-    }
-    
-    .not-voted {
-      background-color: #fee2e2;
-      color: #b91c1c;
-    }
-    
-    .search-container {
-      position: relative;
-    }
-    
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #9ca3af;
-    }
-    
-    .search-input {
-      padding-left: 40px;
-    }
-  </style>
+  <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">\
+  <link rel="stylesheet" href="../css/voter_list.css">
+
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex">
   <!-- Sidebar -->
@@ -217,13 +138,6 @@ $not_voted = $total_voters - $voted_count;
             </a>
           </div>
           <div class="relative group">
-            <button class="flex items-center gap-2 text-gray-700">
-              <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                <i class="fas fa-user text-indigo-700"></i>
-              </div>
-              <span class="hidden md:inline">Admin</span>
-              <i class="fas fa-chevron-down text-xs"></i>
-            </button>
             <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block z-50">
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-user mr-2"></i> Profil</a>
               <a href="logout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
