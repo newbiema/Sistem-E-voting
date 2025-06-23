@@ -78,3 +78,42 @@
     .search-input {
       padding-left: 40px;
     }
+
+    .edit-button, .delete-button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .edit-button {
+    background: #3B82F6;
+    color: white;
+  }
+
+  .delete-button {
+    background: #EF4444;
+    color: white;
+  }
+
+  .edit-button:hover {
+    background: #2563EB;
+    transform: translateY(-1px);
+  }
+
+  .delete-button:hover {
+    background: #DC2626;
+    transform: translateY(-1px);
+  }
+
+.swal2-popup {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-radius: 12px !important;
+}
+
+.swal2-title {
+  font-size: 1.5rem !important;
+}

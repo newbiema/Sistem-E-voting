@@ -16,11 +16,18 @@ $query = "SELECT u.id, u.nim, u.nama,
           ORDER BY u.id DESC";
 
 $voters = mysqli_query($conn, $query);
+if (!$voters) {
+  die("Query error: " . mysqli_error($conn));
+}
+
 $total_voters = mysqli_num_rows($voters);
 
 // Perhitungan jumlah yang sudah memilih juga perlu disesuaikan
-$voted_count = mysqli_query($conn, "SELECT COUNT(DISTINCT nim) as count FROM votes");
-$voted_count = mysqli_fetch_assoc($voted_count)['count'];
+$voted_count_result = mysqli_query($conn, "SELECT COUNT(DISTINCT nim) as count FROM votes");
+if (!$voted_count_result) {
+  die("Query error: " . mysqli_error($conn));
+}
+$voted_count = mysqli_fetch_assoc($voted_count_result)['count'];
 $not_voted = $total_voters - $voted_count;
 ?>
 
@@ -33,7 +40,8 @@ $not_voted = $total_voters - $voted_count;
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">\
-  <link rel="stylesheet" href="../css/voter_list.css">
+  <link rel="stylesheet" href="../css/daftar_user.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex">
@@ -52,17 +60,9 @@ $not_voted = $total_voters - $voted_count;
         <i class="fas fa-chart-bar"></i>
         Dashboard
       </a>
-      <a href="create.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
-        <i class="fas fa-plus-circle"></i>
-        Tambah Kandidat
-      </a>
       <a href="voter_list.php" class="sidebar-link active flex items-center gap-3 py-3 px-6 text-sm">
         <i class="fas fa-users"></i>
         Daftar Pemilih
-      </a>
-      <a href="admin_create_user.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
-        <i class="fas fa-user-plus"></i>
-        Create User
       </a>
     </nav>
     
@@ -100,17 +100,9 @@ $not_voted = $total_voters - $voted_count;
           <i class="fas fa-chart-bar"></i>
           Dashboard
         </a>
-        <a href="create.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
-          <i class="fas fa-plus-circle"></i>
-          Tambah Kandidat
-        </a>
         <a href="voter_list.php" class="sidebar-link active flex items-center gap-3 py-3 px-6 text-sm">
           <i class="fas fa-users"></i>
-          Daftar Pemilih
-        </a>
-        <a href="admin_create_user.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
-          <i class="fas fa-user-plus"></i>
-          Create User
+          Daftar User
         </a>
       </nav>
       
@@ -181,14 +173,19 @@ $not_voted = $total_voters - $voted_count;
         </div>
       </div>
       
-      <!-- Voter List -->
+<!-- Voter List -->
       <div class="bg-white rounded-xl shadow">
         <div class="p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <h2 class="text-lg font-semibold"><i class="fas fa-list text-indigo-600 mr-2"></i>Daftar Pemilih</h2>
-          <div class="w-full md:w-auto">
+          <div class="flex gap-3">
             <div class="search-container">
               <i class="fas fa-search search-icon"></i>
               <input type="text" placeholder="Cari nama atau NIM..." class="search-input w-full md:w-64 border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div class="block md:hidden">
+              <a href="admin_create_user.php" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2">
+                <i class="fas fa-user-plus"></i>
+              </a>
             </div>
           </div>
         </div>
@@ -201,6 +198,7 @@ $not_voted = $total_voters - $voted_count;
                 <th>NIM</th>
                 <th>Nama</th>
                 <th>Status Pemilihan</th>
+                <th class="rounded-tr-lg">Aksi</th> <!-- Kolom baru -->
               </tr>
             </thead>
             <tbody>
@@ -215,12 +213,27 @@ $not_voted = $total_voters - $voted_count;
                         <?php echo $row['status_vote']; ?>
                       </span>
                     </td>
-
+                    <td>
+                      <div class="flex gap-2 justify-center">
+                        <!-- Tombol Edit -->
+                        <a href="admin_edit_user.php?id=<?php echo $row['id']; ?>" class="edit-button">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        
+                        <!-- Tombol Delete (diubah) -->
+                        <form action="delete_user.php" method="POST" class="delete-form">
+                          <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                          <button type="button" onclick="confirmDelete(event, this.closest('form'))" class="delete-button">
+                            <i class="fas fa-trash-alt"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
                   </tr>
                 <?php endwhile; ?>
               <?php else : ?>
                 <tr>
-                  <td colspan="5" class="text-center py-8 text-gray-500">
+                  <td colspan="6" class="text-center py-8 text-gray-500">
                     <i class="fas fa-users-slash text-4xl mb-3 text-gray-300"></i>
                     <p>Belum ada data pemilih</p>
                   </td>
@@ -229,8 +242,6 @@ $not_voted = $total_voters - $voted_count;
             </tbody>
           </table>
         </div>
-        
-
       </div>
     </main>
   </div>
@@ -245,25 +256,82 @@ $not_voted = $total_voters - $voted_count;
       document.getElementById('mobileSidebar').classList.add('hidden');
     });
     
+    // Close sidebar when clicking outside
+    document.getElementById('mobileSidebar').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.add('hidden');
+      }
+    });
+    
     // Search functionality
     const searchInput = document.querySelector('.search-input');
     const tableRows = document.querySelectorAll('.voter-table tbody tr');
     
-    searchInput.addEventListener('input', function() {
-      const searchTerm = this.value.toLowerCase();
-      
-      // Fixed: converted arrow function to regular function
-      tableRows.forEach(function(row) {
-        const nim = row.cells[1].textContent.toLowerCase();
-        const nama = row.cells[2].textContent.toLowerCase();
+    if (searchInput && tableRows.length > 0) {
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
         
-        if (nim.includes(searchTerm) || nama.includes(searchTerm)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
+        tableRows.forEach(function(row) {
+          const nim = row.cells[1].textContent.toLowerCase();
+          const nama = row.cells[2].textContent.toLowerCase();
+          
+          if (nim.includes(searchTerm) || nama.includes(searchTerm)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    // SweetAlert untuk konfirmasi delete
+    function confirmDelete(event, form) {
+      event.preventDefault();
+      
+      Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "User akan dihapus permanen!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
         }
       });
-    });
+    }
+  </script>
+
+  <?php
+  // Tampilkan notifikasi - DIPINDAHKAN KE BAWAH
+  if (isset($_SESSION['success'])) {
+    echo '<script>
+      Swal.fire({
+        icon: "success",
+        title: "Sukses!",
+        text: '.json_encode($_SESSION['success']).',
+        showConfirmButton: true,
+        timer: 3000
+      });
+    </script>';
+    unset($_SESSION['success']);
+  }
+
+  if (isset($_SESSION['error'])) {
+    echo '<script>
+      Swal.fire({
+        icon: "error",
+        title: "Gagal!",
+        text: '.json_encode($_SESSION['error']).',
+        showConfirmButton: true
+      });
+    </script>';
+    unset($_SESSION['error']);
+  }
+  ?>
   </script>
 </body>
 </html>

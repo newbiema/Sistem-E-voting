@@ -53,17 +53,9 @@ $total_votes = mysqli_fetch_assoc($total_votes)['total'];
         <i class="fas fa-chart-bar"></i>
         Dashboard
       </a>
-      <a href="create.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
-        <i class="fas fa-plus-circle"></i>
-        Tambah Kandidat
-      </a>
-      <a href="voter_list.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
+      <a href="daftar_user.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
         <i class="fas fa-users"></i>
         Daftar Pemilih
-      </a>
-      <a href="admin_create_user.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
-        <i class="fas fa-cog"></i>
-        Create User
       </a>
     </nav>
     
@@ -101,17 +93,9 @@ $total_votes = mysqli_fetch_assoc($total_votes)['total'];
           <i class="fas fa-chart-bar"></i>
           Dashboard
         </a>
-        <a href="create.php" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
-          <i class="fas fa-plus-circle"></i>
-          Tambah Kandidat
-        </a>
         <a href="#" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
           <i class="fas fa-users"></i>
-          Daftar Pemilih
-        </a>
-        <a href="#" class="sidebar-link flex items-center gap-3 py-3 px-6 text-sm">
-          <i class="fas fa-cog"></i>
-          Pengaturan
+          Daftar User
         </a>
       </nav>
       
@@ -134,7 +118,7 @@ $total_votes = mysqli_fetch_assoc($total_votes)['total'];
         </div>
         <div class="flex items-center gap-3">
           <div class="hidden md:block">
-            <a href="create.php" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2">
+            <a href="admin_create_kandidat.php" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2">
               <i class="fas fa-plus"></i> Tambah Kandidat
             </a>
           </div>
@@ -188,9 +172,7 @@ $total_votes = mysqli_fetch_assoc($total_votes)['total'];
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-lg font-semibold"><i class="fas fa-chart-pie text-indigo-600 mr-2"></i>Distribusi Suara</h2>
           <div class="flex gap-2">
-            <button class="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded">Hari Ini</button>
-            <button class="text-xs bg-white border text-gray-700 px-3 py-1 rounded">Minggu Ini</button>
-            <button class="text-xs bg-white border text-gray-700 px-3 py-1 rounded">Semua</button>
+            <button class="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded">Semua</button>
           </div>
         </div>
         <div class="h-64">
