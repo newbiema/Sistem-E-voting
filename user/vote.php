@@ -13,26 +13,33 @@ $nim = $_SESSION['nim'];
 // Cek apakah user sudah voting
 $cek = mysqli_query($conn, "SELECT * FROM votes WHERE nim = '$nim'");
 if (mysqli_num_rows($cek) > 0) {
-  // Sudah voting, kembalikan ke halaman utama
   header("Location: view.php");
   exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $candidate_id = mysqli_real_escape_string($conn, $_POST['candidate_id']);
+  $ketua_id = isset($_POST['ketua_id']) ? intval($_POST['ketua_id']) : 0;
+  $wakil_id = isset($_POST['wakil_id']) ? intval($_POST['wakil_id']) : 0;
 
-  // Simpan suara ke tabel votes
-  $insert = mysqli_query($conn, "INSERT INTO votes (nim, candidate_id) VALUES ('$nim', '$candidate_id')");
+  // Validasi ID harus dipilih
+  if ($ketua_id === 0 || $wakil_id === 0) {
+    echo "<script>alert('Harap pilih kandidat ketua dan wakil.'); window.location='view.php';</script>";
+    exit();
+  }
+
+  // Simpan suara
+  $query = "INSERT INTO votes (nim, candidate_id_ketua, candidate_id_wakil) 
+            VALUES ('$nim', '$ketua_id', '$wakil_id')";
+  $insert = mysqli_query($conn, $query);
 
   if ($insert) {
-    // Redirect kembali ke halaman utama dengan status sukses
     header("Location: view.php");
     exit();
   } else {
-    echo "<script>alert('Gagal menyimpan suara. Silakan coba lagi.'); window.location='index.php';</script>";
+    echo "<script>alert('Gagal menyimpan suara.'); window.location='view.php';</script>";
   }
 } else {
-  header("Location: index.php");
+  header("Location: view.php");
   exit();
 }
 ?>

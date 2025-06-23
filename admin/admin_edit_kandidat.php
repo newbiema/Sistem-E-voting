@@ -7,306 +7,455 @@ if (!isset($_SESSION['admin_login'])) {
   exit();
 }
 
-// Ambil ID kandidat dari parameter URL
+$type = isset($_GET['type']) && in_array($_GET['type'], ['ketua', 'wakil']) ? $_GET['type'] : 'ketua';
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Ambil data kandidat dari database
-$query = "SELECT * FROM kandidat WHERE id = $id";
-$result = mysqli_query($conn, $query);
-$kandidat = mysqli_fetch_assoc($result);
+$table = $type === 'ketua' ? 'candidates_ketua' : 'candidates_wakil';
 
-// Jika kandidat tidak ditemukan, redirect ke halaman kandidat
-if (!$kandidat) {
-  $_SESSION['error'] = "Kandidat tidak ditemukan!";
-  header('Location: kandidat.php');
+// Fetch candidate data
+$query = "SELECT * FROM $table WHERE id = $id";
+$result = mysqli_query($conn, $query);
+$candidate = mysqli_fetch_assoc($result);
+
+if (!$candidate) {
+  header('Location: admin.php');
   exit();
 }
 
-$errors = [];
-$success = '';
+$color = $type === 'ketua' ? 'bg-yellow-500' : 'bg-blue-500';
+$icon = $type === 'ketua' ? 'crown' : 'user-friends';
 
-// Proses form jika ada data yang dikirim
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $nama = mysqli_real_escape_string($conn, $_POST['nama']);
-  $nim = mysqli_real_escape_string($conn, $_POST['nim']);
-  $angkatan = mysqli_real_escape_string($conn, $_POST['angkatan']);
   $visi = mysqli_real_escape_string($conn, $_POST['visi']);
-  $misi = mysqli_real_escape_string($conn, $_POST['misi']);
-  $program_kerja = mysqli_real_escape_string($conn, $_POST['program_kerja']);
   
-  // Validasi input
-  if (empty($nama)) $errors[] = "Nama kandidat harus diisi!";
-  if (empty($nim)) $errors[] = "NIM kandidat harus diisi!";
-  if (empty($angkatan)) $errors[] = "Angkatan kandidat harus diisi!";
-  if (empty($visi)) $errors[] = "Visi kandidat harus diisi!";
-  if (empty($misi)) $errors[] = "Misi kandidat harus diisi!";
+  // Handle file upload
+  $foto_name = $candidate['foto'];
   
-  // Tangani upload foto jika ada
-  $foto = $kandidat['foto'];
-  
-  if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-    $file = $_FILES['foto'];
-    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-    $allowed = ['jpg', 'jpeg', 'png'];
-    
-    if (in_array(strtolower($ext), $allowed)) {
-      // Buat nama file unik
-      $new_filename = "kandidat_" . $id . "_" . time() . "." . $ext;
-      $target_path = "../uploads/kandidat/" . $new_filename;
-      
-      // Pindahkan file ke folder uploads
-      if (move_uploaded_file($file['tmp_name'], $target_path)) {
-        // Hapus foto lama jika ada
-        if ($foto && file_exists("../uploads/kandidat/" . $foto)) {
-          unlink("../uploads/kandidat/" . $foto);
-        }
-        $foto = $new_filename;
-      } else {
-        $errors[] = "Gagal mengunggah foto!";
-      }
-    } else {
-      $errors[] = "Format file tidak didukung! Hanya JPG, JPEG, dan PNG yang diperbolehkan.";
+  if (!empty($_FILES['foto']['name'])) {
+    // Delete old photo if exists
+    if ($foto_name && file_exists('../' . $foto_name)) {
+      unlink('../' . $foto_name);
     }
+    
+    // Upload new photo
+    $foto_name = 'uploads/' . time() . '_' . basename($_FILES['foto']['name']);
+    move_uploaded_file($_FILES['foto']['tmp_name'], '../' . $foto_name);
   }
   
-  // Jika tidak ada error, update data
-  if (empty($errors)) {
-    $update_query = "UPDATE kandidat SET 
-                    nama = '$nama',
-                    nim = '$nim',
-                    angkatan = '$angkatan',
-                    foto = '$foto',
-                    visi = '$visi',
-                    misi = '$misi',
-                    program_kerja = '$program_kerja'
-                    WHERE id = $id";
-    
-    if (mysqli_query($conn, $update_query)) {
-      $_SESSION['success'] = "Data kandidat berhasil diperbarui!";
-      header('Location: kandidat.php');
-      exit();
-    } else {
-      $errors[] = "Error: " . mysqli_error($conn);
-    }
-  }
+  // Update candidate data
+  $query = "UPDATE $table SET nama = '$nama', visi = '$visi', foto = '$foto_name' WHERE id = $id";
+  mysqli_query($conn, $query);
+  
+  header("Location: admin.php?success=updated");
+  exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Kandidat - Admin Panel</title>
+  <title>Edit Kandidat <?php echo ucfirst($type); ?></title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function(){
+        const output = document.getElementById('imagePreview');
+        output.src = reader.result;
+        output.classList.remove('hidden');
+        document.getElementById('currentPhoto').classList.add('hidden');
+        document.getElementById('uploadIcon').classList.add('hidden');
+        document.getElementById('fileName').textContent = event.target.files[0].name;
+        document.getElementById('resetContainer').classList.remove('hidden');
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+    
+    function resetForm() {
+      document.getElementById('imagePreview').classList.add('hidden');
+      document.getElementById('currentPhoto').classList.remove('hidden');
+      document.getElementById('uploadIcon').classList.remove('hidden');
+      document.getElementById('fileName').textContent = '';
+      document.getElementById('foto').value = '';
+      document.getElementById('resetContainer').classList.add('hidden');
+    }
+  </script>
   <style>
-    .file-input-wrapper {
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f0f9ff, #e6f7ff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .form-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      max-width: 700px;
+      width: 100%;
+    }
+    
+    .form-header {
+      background: linear-gradient(135deg, 
+        <?php echo $type === 'ketua' ? '#f59e0b' : '#3b82f6'; ?>, 
+        <?php echo $type === 'ketua' ? '#d97706' : '#2563eb'; ?>);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .form-header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .form-header p {
+      opacity: 0.9;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .form-icon {
+      position: absolute;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 80px;
+      opacity: 0.2;
+      z-index: 1;
+    }
+    
+    .form-body {
+      padding: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #334155;
+      font-size: 15px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-input:focus {
+      border-color: <?php echo $type === 'ketua' ? '#f59e0b' : '#3b82f6'; ?>;
+      box-shadow: 0 0 0 4px <?php echo $type === 'ketua' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(59, 130, 246, 0.2)'; ?>;
+      outline: none;
+    }
+    
+    textarea.form-input {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .upload-area {
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #f8fafc;
       position: relative;
       overflow: hidden;
-      display: inline-block;
     }
     
-    .file-input-wrapper input[type=file] {
-      position: absolute;
-      left: 0;
-      top: 0;
-      opacity: 0;
-      cursor: pointer;
-      height: 100%;
-      width: 100%;
+    .upload-area:hover {
+      border-color: <?php echo $type === 'ketua' ? '#f59e0b' : '#3b82f6'; ?>;
+      background: <?php echo $type === 'ketua' ? '#fffbeb' : '#eff6ff'; ?>;
     }
     
-    .preview-container {
-      max-width: 200px;
-      margin: 0 auto;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    .upload-icon {
+      font-size: 48px;
+      color: #94a3b8;
+      margin-bottom: 15px;
     }
     
-    .preview-container img {
-      width: 100%;
-      height: auto;
-      display: block;
+    .upload-text {
+      color: #64748b;
+      margin-bottom: 10px;
     }
     
-    .error-message {
-      color: #e53e3e;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-    
-    .upload-label {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #4f46e5;
+    .btn-upload {
+      background: <?php echo $type === 'ketua' ? '#f59e0b' : '#3b82f6'; ?>;
       color: white;
-      border-radius: 6px;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      display: inline-block;
+      transition: all 0.3s;
+    }
+    
+    .btn-upload:hover {
+      background: <?php echo $type === 'ketua' ? '#e69008' : '#2563eb'; ?>;
+      transform: translateY(-2px);
+    }
+    
+    .file-name {
+      color: #475569;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+    
+    .image-preview {
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 15px auto;
+      display: block;
+      max-height: 200px;
+      object-fit: cover;
+      width: auto;
+    }
+    
+    .btn-reset {
+      background: #ef4444;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 10px;
+      display: inline-block;
       cursor: pointer;
       transition: all 0.3s;
     }
     
-    .upload-label:hover {
-      background-color: #4338ca;
-      transform: translateY(-2px);
+    .btn-reset:hover {
+      background: #dc2626;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .btn-submit {
+      background: <?php echo $type === 'ketua' ? '#f59e0b' : '#3b82f6'; ?>;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      flex: 1;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-submit:hover {
+      background: <?php echo $type === 'ketua' ? '#e69008' : '#2563eb'; ?>;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px <?php echo $type === 'ketua' ? 'rgba(245, 158, 11, 0.4)' : 'rgba(59, 130, 246, 0.4)'; ?>;
+    }
+    
+    .btn-cancel {
+      background: white;
+      color: #64748b;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      border: 2px solid #e2e8f0;
+      flex: 1;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    
+    .btn-cancel:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      transform: translateY(-3px);
+    }
+    
+    .badge {
+      background: <?php echo $type === 'ketua' ? '#fef3c7' : '#dbeafe'; ?>;
+      color: <?php echo $type === 'ketua' ? '#92400e' : '#1e40af'; ?>;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    
+    .current-photo-label {
+      text-align: center;
+      font-size: 14px;
+      color: #64748b;
+      margin-top: 5px;
+    }
+    
+    @media (max-width: 640px) {
+      .form-header {
+        padding: 20px;
+      }
+      
+      .form-icon {
+        font-size: 60px;
+        right: 20px;
+      }
+      
+      .form-body {
+        padding: 20px;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-2xl bg-white rounded-xl shadow-lg overflow-hidden">
-    <div class="bg-gradient-to-r from-indigo-600 to-purple-700 p-6 text-white">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-2xl font-bold"><i class="fas fa-user-edit mr-2"></i>Edit Kandidat</h2>
-          <p class="text-indigo-200">Perbarui informasi kandidat pemilihan</p>
-        </div>
-        <a href="kandidat.php" class="text-white hover:text-indigo-200">
-          <i class="fas fa-times text-xl"></i>
-        </a>
+<body>
+  <div class="form-container">
+    <div class="form-header">
+      <div class="form-icon">
+        <i class="fas fa-<?php echo $icon; ?>"></i>
       </div>
+      <h1>Edit Kandidat <?php echo ucfirst($type); ?></h1>
+      <p>Perbarui data kandidat <?php echo $type; ?> pemilihan HMIF</p>
     </div>
     
-    <div class="p-6">
-      <?php if (!empty($errors)): ?>
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">Terdapat masalah dengan input Anda</h3>
-              <div class="mt-2 text-sm text-red-700">
-                <ul class="list-disc pl-5 space-y-1">
-                  <?php foreach ($errors as $error): ?>
-                    <li><?php echo $error; ?></li>
-                  <?php endforeach; ?>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      <?php endif; ?>
+    <div class="form-body">
+      <div class="badge">
+        <i class="fas fa-<?php echo $type === 'ketua' ? 'crown' : 'user-friends'; ?> mr-2"></i>
+        <?php echo $type === 'ketua' ? 'Calon Ketua' : 'Calon Wakil'; ?>
+      </div>
       
-      <form method="POST" enctype="multipart/form-data">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Foto Kandidat -->
-          <div class="col-span-1">
-            <div class="mb-4">
-              <label class="block text-gray-700 font-medium mb-2">Foto Kandidat</label>
-              <div class="preview-container mb-4">
-                <?php if ($kandidat['foto']): ?>
-                  <img src="../uploads/kandidat/<?php echo htmlspecialchars($kandidat['foto']); ?>" 
-                       alt="Foto <?php echo htmlspecialchars($kandidat['nama']); ?>">
-                <?php else: ?>
-                  <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48 flex items-center justify-center text-gray-500">
-                    <i class="fas fa-user text-4xl"></i>
-                  </div>
-                <?php endif; ?>
-              </div>
-              
-              <div class="file-input-wrapper">
-                <label class="upload-label">
-                  <i class="fas fa-upload mr-2"></i> Pilih Foto Baru
-                  <input type="file" name="foto" id="foto" accept="image/*" class="hidden">
-                </label>
-              </div>
-              <p class="text-xs text-gray-500 mt-2">Format: JPG, PNG. Maksimal 2MB</p>
-            </div>
-          </div>
+      <form action="" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="nama" class="form-label">Nama Lengkap</label>
+          <input type="text" name="nama" id="nama" required class="form-input" 
+                 value="<?php echo htmlspecialchars($candidate['nama']); ?>" 
+                 placeholder="Masukkan nama kandidat">
+        </div>
+        
+        <div class="form-group">
+          <label for="visi" class="form-label">Visi & Misi</label>
+          <textarea name="visi" id="visi" required class="form-input" 
+                    placeholder="Tuliskan visi dan misi kandidat"><?php echo htmlspecialchars($candidate['visi']); ?></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Foto Kandidat</label>
           
-          <!-- Data Kandidat -->
-          <div class="col-span-1">
-            <div class="mb-4">
-              <label for="nama" class="block text-gray-700 font-medium mb-2">Nama Lengkap</label>
-              <input type="text" id="nama" name="nama" value="<?php echo htmlspecialchars($kandidat['nama']); ?>" 
-                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+          <?php if ($candidate['foto']): ?>
+            <div class="text-center mb-4">
+              <img src="../<?php echo $candidate['foto']; ?>" 
+                   alt="Foto saat ini" 
+                   class="image-preview mx-auto" 
+                   id="currentPhoto">
+              <p class="current-photo-label">Foto saat ini</p>
             </div>
-            
-            <div class="mb-4">
-              <label for="nim" class="block text-gray-700 font-medium mb-2">NIM</label>
-              <input type="text" id="nim" name="nim" value="<?php echo htmlspecialchars($kandidat['nim']); ?>" 
-                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-            </div>
-            
-            <div class="mb-4">
-              <label for="angkatan" class="block text-gray-700 font-medium mb-2">Angkatan</label>
-              <input type="text" id="angkatan" name="angkatan" value="<?php echo htmlspecialchars($kandidat['angkatan']); ?>" 
-                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-            </div>
-          </div>
+          <?php endif; ?>
           
-          <!-- Visi, Misi, Program Kerja -->
-          <div class="col-span-1 md:col-span-2">
-            <div class="mb-4">
-              <label for="visi" class="block text-gray-700 font-medium mb-2">Visi</label>
-              <textarea id="visi" name="visi" rows="3" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required><?php echo htmlspecialchars($kandidat['visi']); ?></textarea>
+          <div class="upload-area" onclick="document.getElementById('foto').click()">
+            <div id="uploadIcon" class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
             </div>
+            <p class="upload-text">Klik untuk mengubah foto atau tarik file ke sini</p>
+            <p class="btn-upload">Pilih File Baru</p>
+            <p class="file-name" id="fileName"></p>
             
-            <div class="mb-4">
-              <label for="misi" class="block text-gray-700 font-medium mb-2">Misi</label>
-              <textarea id="misi" name="misi" rows="3" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" required><?php echo htmlspecialchars($kandidat['misi']); ?></textarea>
-            </div>
+            <img id="imagePreview" class="image-preview hidden" alt="Preview gambar baru">
             
-            <div class="mb-6">
-              <label for="program_kerja" class="block text-gray-700 font-medium mb-2">Program Kerja</label>
-              <textarea id="program_kerja" name="program_kerja" rows="3" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"><?php echo htmlspecialchars($kandidat['program_kerja']); ?></textarea>
+            <input type="file" name="foto" id="foto" accept="image/*" class="hidden" onchange="previewImage(event)">
+          </div>
+          <div id="resetContainer" class="hidden text-center">
+            <div class="btn-reset" onclick="resetForm()">
+              <i class="fas fa-times mr-2"></i>Batalkan Perubahan
             </div>
           </div>
         </div>
         
-        <div class="flex justify-between mt-6">
-          <a href="kandidat.php" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg shadow flex items-center">
+        <div class="form-actions">
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-sync-alt mr-2"></i> Perbarui Kandidat
+          </button>
+          <a href="admin.php" class="btn-cancel">
             <i class="fas fa-arrow-left mr-2"></i> Kembali
           </a>
-          <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg shadow flex items-center">
-            <i class="fas fa-save mr-2"></i> Simpan Perubahan
-          </button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    // Preview gambar saat memilih file
-    document.getElementById('foto').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const previewContainer = document.querySelector('.preview-container');
-          previewContainer.innerHTML = `<img src="${e.target.result}" alt="Preview foto">`;
+    // Menampilkan tombol reset ketika gambar baru dipilih
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function(){
+        const output = document.getElementById('imagePreview');
+        output.src = reader.result;
+        output.classList.remove('hidden');
+        document.getElementById('fileName').textContent = event.target.files[0].name;
+        document.getElementById('resetContainer').classList.remove('hidden');
+        
+        // Hide current photo if exists
+        if (document.getElementById('currentPhoto')) {
+          document.getElementById('currentPhoto').classList.add('hidden');
         }
-        reader.readAsDataURL(file);
+        
+        // Hide upload icon
+        document.getElementById('uploadIcon').classList.add('hidden');
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+    
+    function resetForm() {
+      document.getElementById('imagePreview').classList.add('hidden');
+      document.getElementById('fileName').textContent = '';
+      document.getElementById('foto').value = '';
+      document.getElementById('resetContainer').classList.add('hidden');
+      
+      // Show current photo if exists
+      if (document.getElementById('currentPhoto')) {
+        document.getElementById('currentPhoto').classList.remove('hidden');
+      }
+      
+      // Show upload icon
+      document.getElementById('uploadIcon').classList.remove('hidden');
+    }
+    
+    // Validasi form sebelum submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const nama = document.getElementById('nama').value.trim();
+      const visi = document.getElementById('visi').value.trim();
+      
+      if (!nama || !visi) {
+        e.preventDefault();
+        alert('Harap lengkapi semua kolom yang wajib diisi!');
       }
     });
-    
-    // Tampilkan notifikasi jika ada session message
-    <?php if (isset($_SESSION['success'])): ?>
-      Swal.fire({
-        icon: 'success',
-        title: 'Sukses!',
-        text: '<?php echo addslashes($_SESSION['success']); ?>',
-        showConfirmButton: false,
-        timer: 3000
-      });
-      <?php unset($_SESSION['success']); ?>
-    <?php endif; ?>
-    
-    <?php if (isset($_SESSION['error'])): ?>
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal!',
-        text: '<?php echo addslashes($_SESSION['error']); ?>',
-        showConfirmButton: true
-      });
-      <?php unset($_SESSION['error']); ?>
-    <?php endif; ?>
   </script>
 </body>
 </html>
