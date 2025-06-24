@@ -25,7 +25,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $query = "INSERT INTO $table (nama, visi, foto) VALUES ('$nama', '$visi', '$foto_name')";
   mysqli_query($conn, $query);
-  header("Location: admin.php?success=added");
+  
+  // Set session untuk sweetalert
+  $_SESSION['sweet_alert'] = [
+    'icon' => 'success',
+    'title' => 'Berhasil!',
+    'text' => 'Kandidat baru berhasil ditambahkan'
+  ];
+  
+  header("Location: admin.php");
   exit();
 }
 ?>
@@ -37,26 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Tambah Kandidat <?php echo ucfirst($type); ?></title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script>
-    function previewImage(event) {
-      const reader = new FileReader();
-      reader.onload = function(){
-        const output = document.getElementById('imagePreview');
-        output.src = reader.result;
-        output.classList.remove('hidden');
-        document.getElementById('uploadIcon').classList.add('hidden');
-        document.getElementById('fileName').textContent = event.target.files[0].name;
-      };
-      reader.readAsDataURL(event.target.files[0]);
-    }
-    
-    function resetForm() {
-      document.getElementById('imagePreview').classList.add('hidden');
-      document.getElementById('uploadIcon').classList.remove('hidden');
-      document.getElementById('fileName').textContent = '';
-      document.getElementById('foto').value = '';
-    }
-  </script>
+  <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">
+  <!-- SweetAlert CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
     
@@ -318,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php echo $type === 'ketua' ? 'Calon Ketua' : 'Calon Wakil'; ?>
       </div>
       
-      <form action="" method="POST" enctype="multipart/form-data">
+      <form id="candidateForm" action="" method="POST" enctype="multipart/form-data">
         <div class="form-group">
           <label for="nama" class="form-label">Nama Lengkap</label>
           <input type="text" name="nama" id="nama" required class="form-input" placeholder="Masukkan nama kandidat">
@@ -362,8 +353,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 
+  <!-- SweetAlert JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  
   <script>
-    // Menampilkan tombol reset ketika gambar dipilih
+    // Fungsi untuk preview gambar
     function previewImage(event) {
       const reader = new FileReader();
       reader.onload = function(){
@@ -377,6 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       reader.readAsDataURL(event.target.files[0]);
     }
     
+    // Fungsi untuk mereset form
     function resetForm() {
       document.getElementById('imagePreview').classList.add('hidden');
       document.getElementById('uploadIcon').classList.remove('hidden');
@@ -385,16 +380,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       document.getElementById('resetContainer').classList.add('hidden');
     }
     
-    // Validasi form sebelum submit
-    document.querySelector('form').addEventListener('submit', function(e) {
+    // Tangani submit form dengan SweetAlert
+    document.getElementById('candidateForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
       const nama = document.getElementById('nama').value.trim();
       const visi = document.getElementById('visi').value.trim();
       
       if (!nama || !visi) {
-        e.preventDefault();
-        alert('Harap lengkapi semua kolom yang wajib diisi!');
+        Swal.fire({
+          icon: 'error',
+          title: 'Form tidak lengkap',
+          text: 'Harap isi semua kolom yang wajib diisi!',
+          confirmButtonColor: '<?php echo $type === 'ketua' ? '#f59e0b' : '#3b82f6'; ?>',
+        });
+        return;
       }
+      
+      Swal.fire({
+        title: 'Konfirmasi',
+        text: 'Apakah Anda yakin ingin menambahkan kandidat ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '<?php echo $type === 'ketua' ? '#f59e0b' : '#3b82f6'; ?>',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Tambahkan!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Submit form jika konfirmasi diterima
+          this.submit();
+        }
+      });
     });
+    
+    // Tampilkan notifikasi jika ada di session
+    <?php if (isset($_SESSION['sweet_alert'])): ?>
+      Swal.fire({
+        icon: '<?php echo $_SESSION['sweet_alert']['icon']; ?>',
+        title: '<?php echo $_SESSION['sweet_alert']['title']; ?>',
+        text: '<?php echo $_SESSION['sweet_alert']['text']; ?>',
+        confirmButtonColor: '<?php echo $type === 'ketua' ? '#f59e0b' : '#3b82f6'; ?>',
+      });
+      <?php unset($_SESSION['sweet_alert']); ?>
+    <?php endif; ?>
   </script>
 </body>
 </html>

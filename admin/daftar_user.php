@@ -51,7 +51,7 @@ $not_voted = $total_voters - $voted_count;
       <img src="../img/hmif.png" alt="Logo" class="w-10 h-10">
       <div>
         <h1 class="font-bold text-xl">Admin Panel</h1>
-        <p class="text-xs text-indigo-300">Pemilihan Ketua HMIF</p>
+        <p class="text-xs text-indigo-300">Sistem E-Voting HMIF</p>
       </div>
     </div>
     
@@ -60,7 +60,7 @@ $not_voted = $total_voters - $voted_count;
         <i class="fas fa-chart-bar"></i>
         Dashboard
       </a>
-      <a href="voter_list.php" class="sidebar-link active flex items-center gap-3 py-3 px-6 text-sm">
+      <a href="daftar_user.php" class="sidebar-link active flex items-center gap-3 py-3 px-6 text-sm">
         <i class="fas fa-users"></i>
         Daftar Pemilih
       </a>
@@ -100,7 +100,7 @@ $not_voted = $total_voters - $voted_count;
           <i class="fas fa-chart-bar"></i>
           Dashboard
         </a>
-        <a href="voter_list.php" class="sidebar-link active flex items-center gap-3 py-3 px-6 text-sm">
+        <a href="daftar_user.php" class="sidebar-link active flex items-center gap-3 py-3 px-6 text-sm">
           <i class="fas fa-users"></i>
           Daftar User
         </a>
@@ -216,9 +216,10 @@ $not_voted = $total_voters - $voted_count;
                     <td>
                       <div class="flex gap-2 justify-center">
                         <!-- Tombol Edit -->
-                        <a href="admin_edit_user.php?id=<?php echo $row['id']; ?>" class="edit-button">
+                        <a href="admin_edit_user.php?nim=<?php echo $row['nim']; ?>" class="edit-button">
                           <i class="fas fa-edit"></i>
                         </a>
+
                         
                         <!-- Tombol Delete (diubah) -->
                         <form action="delete_user.php" method="POST" class="delete-form">

@@ -47,6 +47,7 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
   <title>Pemilihan Ketua & Wakil HMIF</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -304,8 +305,10 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
       <div class="mt-8 text-center">
         <div class="inline-block bg-blue-500/20 backdrop-blur-sm px-6 py-3 rounded-full border border-blue-300/30">
           <div class="flex items-center justify-center gap-3">
-            <i class="fas fa-calendar-alt text-blue-100"></i>
-            <span class="text-blue-100 font-medium">1 - 7 Juni 2025 | 08:00 - 22:00 WITA</span>
+          <p class="text-sm flex items-center">
+            <i class="fas fa-calendar-alt mr-2"></i>
+            <span id="live-time" class="text-blue-100 font-medium"></span>
+          </p>
           </div>
         </div>
       </div>
@@ -596,14 +599,15 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
     <div>
       <h3 class="text-xl font-bold mb-4">Informasi</h3>
       <ul class="text-blue-100 space-y-3 text-sm">
-        <li class="flex items-center gap-3">
-          <i class="fas fa-calendar-alt text-blue-400"></i>
-          <span>Periode: 1–7 Juni 2025</span>
-        </li>
-        <li class="flex items-center gap-3">
-          <i class="fas fa-clock text-blue-400"></i>
-          <span>Jam: 08:00 – 22:00 WITA</span>
-        </li>
+      <li class="flex items-center gap-3">
+        <i class="fas fa-calendar-alt text-blue-400"></i>
+        <span id="tanggal-sekarang">Periode: Hari ini</span>
+      </li>
+      <li class="flex items-center gap-3">
+        <i class="fas fa-clock text-blue-400"></i>
+        <span id="jam-sekarang">Jam: --:--:-- WIB</span>
+      </li>
+
         <li class="flex items-center gap-3">
           <i class="fas fa-user-shield text-blue-400"></i>
           <span>Sistem Terverifikasi dan Aman</span>
@@ -615,21 +619,14 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
     <div>
       <h3 class="text-xl font-bold mb-4">Kontak</h3>
       <ul class="text-blue-100 space-y-3 text-sm">
-        <li class="flex items-center gap-3">
-          <i class="fas fa-envelope text-blue-400"></i>
-          <span>hmif@example.com</span>
-        </li>
+
         <li class="flex items-center gap-3">
           <i class="fab fa-instagram text-pink-400"></i>
-          <a href="https://instagram.com/hmif_official" target="_blank" class="hover:underline">@hmif_official</a>
+          <a href="https://www.instagram.com/hmif_uwg/l" target="_blank" class="hover:underline">@hmif_uwg</a>
         </li>
         <li class="flex items-center gap-3">
           <i class="fab fa-whatsapp text-green-400"></i>
-          <a href="https://wa.me/6281234567890" target="_blank" class="hover:underline">+62 812-3456-7890</a>
-        </li>
-        <li class="flex items-center gap-3">
-          <i class="fab fa-youtube text-red-500"></i>
-          <a href="https://www.youtube.com/@hmifchannel" target="_blank" class="hover:underline">HMIF Channel</a>
+          <a href="https://wa.me/6281234567890" target="_blank" class="hover:underline">+62 878-9221-9615</a>
         </li>
       </ul>
     </div>
@@ -850,6 +847,55 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
       });
       <?php endif; ?>
     });
+
+
+    
+    function updateTime() {
+    const now = new Date();
+    const options = {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Jakarta'
+    };
+    const formatted = now.toLocaleString('id-ID', options);
+    document.getElementById('live-time').textContent = formatted + ' WIB';
+  }
+
+  updateTime(); // update pertama kali
+  setInterval(updateTime, 1000); // update setiap detik
+
+
+    function updateTanggalDanJam() {
+    const now = new Date();
+
+    // Format tanggal: Senin, 23 Juni 2025
+    const tanggalOptions = {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Asia/Jakarta'
+    };
+
+    // Format jam: 14:30:15
+    const jamOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Jakarta'
+    };
+
+    const tanggal = now.toLocaleDateString('id-ID', tanggalOptions);
+    const jam = now.toLocaleTimeString('id-ID', jamOptions);
+
+    document.getElementById('tanggal-sekarang').textContent = `Tanggal: ${tanggal}`;
+    document.getElementById('jam-sekarang').textContent = `Jam: ${jam} WIB`;
+  }
+
+  updateTanggalDanJam();            // Panggil pertama kali
+  setInterval(updateTanggalDanJam, 1000);  // Perbarui tiap detik
   </script>
 </body>
 </html>

@@ -5,21 +5,68 @@
       font-family: 'Poppins', sans-serif;
     }
     
-    .sidebar-link:hover {
-      background: linear-gradient(to right, #4f46e5, #7c3aed);
-      color: white;
+    :root {
+      --primary: #4f46e5;
+      --secondary: #7e22ce;
+      --dark: #1e293b;
+      --light: #f1f5f9;
     }
-    .sidebar-link.active {
-      background: linear-gradient(to right, #4f46e5, #7c3aed);
-      color: white;
+    
+    .dark-mode {
+      --primary: #6366f1;
+      --secondary: #a855f7;
+      --dark: #f1f5f9;
+      --light: #1e293b;
     }
-    .candidate-card:hover {
+    
+    body {
+      background-color: var(--light);
+      color: var(--dark);
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .card {
+      transition: transform 0.3s, box-shadow 0.3s;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .dark-mode .card {
+      background-color: rgba(30, 41, 59, 0.9);
+    }
+    
+    .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
-    .stats-card {
-      transition: all 0.3s ease;
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
-    .stats-card:hover {
-      transform: scale(1.03);
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .toggle-checkbox:checked {
+      @apply: right-0 border-green-400;
+      right: 0;
+      border-color: #68d391;
+    }
+    
+    .toggle-checkbox:checked + .toggle-label {
+      @apply: bg-green-400;
+      background-color: #68d391;
+    }
+    
+    .search-input {
+      transition: all 0.3s;
+    }
+    
+    .search-input:focus {
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
     }

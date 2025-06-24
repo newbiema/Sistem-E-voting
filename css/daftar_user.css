@@ -5,6 +5,13 @@
       font-family: 'Poppins', sans-serif;
     }
     
+    :root {
+      --primary: #4f46e5;
+      --secondary: #7e22ce;
+      --dark: #1e293b;
+      --light: #f1f5f9;
+    }
+    
     .sidebar-link:hover {
       background: linear-gradient(to right, #4f46e5, #7c3aed);
       color: white;

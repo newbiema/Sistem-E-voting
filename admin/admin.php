@@ -53,81 +53,11 @@ foreach ($wakil as $w) { $chart_labels[] = $w['nama']; $chart_votes[] = $w['tota
   <title>Dashboard Admin – Pemilihan HMIF</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/admin_dashboard.css">
+  <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-    
-    body {
-      font-family: 'Poppins', sans-serif;
-    }
-    
-    :root {
-      --primary: #4f46e5;
-      --secondary: #7e22ce;
-      --dark: #1e293b;
-      --light: #f1f5f9;
-    }
-    
-    .dark-mode {
-      --primary: #6366f1;
-      --secondary: #a855f7;
-      --dark: #f1f5f9;
-      --light: #1e293b;
-    }
-    
-    body {
-      background-color: var(--light);
-      color: var(--dark);
-      transition: background-color 0.3s, color 0.3s;
-    }
-    
-    .card {
-      transition: transform 0.3s, box-shadow 0.3s;
-      background-color: rgba(255, 255, 255, 0.9);
-    }
-    
-    .dark-mode .card {
-      background-color: rgba(30, 41, 59, 0.9);
-    }
-    
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-    
-    .gradient-bg {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-    }
-    
-    .fade-in {
-      animation: fadeIn 0.5s ease-in-out;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .toggle-checkbox:checked {
-      @apply: right-0 border-green-400;
-      right: 0;
-      border-color: #68d391;
-    }
-    
-    .toggle-checkbox:checked + .toggle-label {
-      @apply: bg-green-400;
-      background-color: #68d391;
-    }
-    
-    .search-input {
-      transition: all 0.3s;
-    }
-    
-    .search-input:focus {
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
-    }
-  </style>
+
 </head>
 <body class="min-h-screen flex">
   <!-- Sidebar (Desktop) -->
@@ -136,11 +66,11 @@ foreach ($wakil as $w) { $chart_labels[] = $w['nama']; $chart_votes[] = $w['tota
       <img src="../img/hmif.png" alt="HMIF" class="w-10 h-10"/>
       <div>
         <h1 class="font-bold text-xl">Admin Panel</h1>
-        <p class="text-xs text-indigo-300">Pemilihan HMIF</p>
+        <p class="text-xs text-indigo-300">Sistem E-Voting HMIF</p>
       </div>
     </div>
     <nav class="mt-6 space-y-1">
-      <a href="admin.php" class="flex items-center gap-3 py-3 px-6 bg-white/20"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="admin.php" class="flex items-center gap-3 py-3 px-6 bg-white/20"><i class="fas fa-chart-bar"></i> Dashboard</a>
       <a href="daftar_user.php" class="flex items-center gap-3 py-3 px-6 hover:bg-white/10"><i class="fas fa-users"></i> Daftar Pemilih</a>
     </nav>
     <div class="absolute bottom-0 w-full p-5 border-t border-indigo-700">
@@ -236,14 +166,12 @@ foreach ($wakil as $w) { $chart_labels[] = $w['nama']; $chart_votes[] = $w['tota
           <div>
             <p class="text-sm text-gray-500">Tanggal</p>
             <h2 class="text-2xl font-bold mt-1"><?php echo date('d M Y'); ?></h2>
-            <p class="text-sm text-gray-500 mt-1"><?php echo date('H:i'); ?> WIB</p>
           </div>
           <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
             <i class="fas fa-calendar-alt text-indigo-500 text-xl"></i>
           </div>
         </div>
         <div class="mt-3 pt-3 border-t border-gray-200">
-=
         </div>
       </div>
     </div>
