@@ -3,7 +3,7 @@ session_start();
 include '../db.php';
 
 if (!isset($_SESSION['nim'])) {
-  header('Location: login.php');
+  header('Location: ../login.php');
   exit();
 }
 $nim = $_SESSION['nim'];
@@ -50,6 +50,90 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
   <link rel="shortcut icon" href="../img/hmif.png" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+    /* ... (semua style sebelumnya tetap sama) ... */
+    
+    /* Style khusus untuk tombol SweetAlert */
+    .custom-swal-confirm-btn {
+      background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+      color: white !important;
+      border: none !important;
+      border-radius: 12px !important;
+      padding: 12px 30px !important;
+      font-weight: 600 !important;
+      font-size: 16px !important;
+      transition: all 0.3s !important;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .custom-swal-confirm-btn:hover {
+      background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+      transform: translateY(-3px) !important;
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6) !important;
+    }
+    
+    .custom-swal-confirm-btn:active {
+      transform: translateY(1px) !important;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4) !important;
+    }
+    
+    .custom-swal-confirm-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(30deg);
+      transition: all 0.6s;
+    }
+    
+    .custom-swal-confirm-btn:hover::after {
+      transform: rotate(30deg) translate(50%, 50%);
+    }
+    
+    .custom-swal-confirm-btn i {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    
+    .custom-swal-cancel-btn {
+      background: white !important;
+      color: #64748b !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      padding: 12px 30px !important;
+      font-weight: 600 !important;
+      font-size: 16px !important;
+      transition: all 0.3s !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .custom-swal-cancel-btn:hover {
+      background: #f8fafc !important;
+      color: #475569 !important;
+      border-color: #cbd5e1 !important;
+      transform: translateY(-3px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .custom-swal-cancel-btn:active {
+      transform: translateY(1px) !important;
+    }
+    
+    .custom-swal-cancel-btn i {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    
+    .swal2-actions {
+      gap: 15px !important;
+      margin-top: 25px !important;
+    }
+  </style>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
     body {
@@ -635,177 +719,190 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Fungsi untuk memperbarui waktu
-  function updateTime() {
-    const now = new Date();
-    
-    // Format waktu untuk header
-    const headerOptions = {
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric',
-      hour: '2-digit', 
-      minute: '2-digit', 
-      second: '2-digit',
-      hour12: false,
-      timeZone: 'Asia/Jakarta'
-    };
-    const formattedHeader = now.toLocaleString('id-ID', headerOptions);
-    document.getElementById('live-time').textContent = formattedHeader + ' WIB';
-    
-    // Format waktu untuk footer
-    const tanggalOptions = {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'Asia/Jakarta'
-    };
-    const jamOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-      timeZone: 'Asia/Jakarta'
-    };
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fungsi untuk memperbarui waktu
+      function updateTime() {
+        const now = new Date();
+        
+        // Format waktu untuk header
+        const headerOptions = {
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric',
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Jakarta'
+        };
+        const formattedHeader = now.toLocaleString('id-ID', headerOptions);
+        document.getElementById('live-time').textContent = formattedHeader + ' WIB';
+        
+        // Format waktu untuk footer
+        const tanggalOptions = {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          timeZone: 'Asia/Jakarta'
+        };
+        const jamOptions = {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Jakarta'
+        };
 
-    const tanggal = now.toLocaleDateString('id-ID', tanggalOptions);
-    const jam = now.toLocaleTimeString('id-ID', jamOptions);
+        const tanggal = now.toLocaleDateString('id-ID', tanggalOptions);
+        const jam = now.toLocaleTimeString('id-ID', jamOptions);
 
-    document.getElementById('tanggal-sekarang').textContent = `Tanggal: ${tanggal}`;
-    document.getElementById('jam-sekarang').textContent = `Jam: ${jam} WIB`;
-  }
+        document.getElementById('tanggal-sekarang').textContent = `Tanggal: ${tanggal}`;
+        document.getElementById('jam-sekarang').textContent = `Jam: ${jam} WIB`;
+      }
 
-  // Fungsi untuk menampilkan modal kandidat
-  function showCandidateModal(btn) {
-    const modalFoto = document.getElementById('modalFoto');
-    const modalNama = document.getElementById('modalNama');
-    const modalVisi = document.getElementById('modalVisi');
-    const modalJurusan = document.getElementById('modalJurusan');
-    const modal = document.getElementById('candidateModal');
-    
-    modalFoto.src = btn.dataset.foto;
-    modalNama.textContent = btn.dataset.name;
-    modalVisi.innerHTML = btn.dataset.visi.replace(/\n/g, '<br>');
-    
-    // Tentukan jurusan dan semester
-    const parentSection = btn.closest('.space-y-6');
-    if (parentSection.querySelector('div').textContent.includes('Kandidat Ketua')) {
-      modalJurusan.textContent = "Teknik Informatika - Semester 4";
-    } else {
-      modalJurusan.textContent = "Teknik Informatika - Semester 2";
-    }
-    
-    modal.style.display = 'flex';
-  }
+      // Fungsi untuk menampilkan modal kandidat
+      function showCandidateModal(btn) {
+        const modalFoto = document.getElementById('modalFoto');
+        const modalNama = document.getElementById('modalNama');
+        const modalVisi = document.getElementById('modalVisi');
+        const modalJurusan = document.getElementById('modalJurusan');
+        const modal = document.getElementById('candidateModal');
+        
+        modalFoto.src = btn.dataset.foto;
+        modalNama.textContent = btn.dataset.name;
+        modalVisi.innerHTML = btn.dataset.visi.replace(/\n/g, '<br>');
+        
+        // Tentukan jurusan dan semester
+        const parentSection = btn.closest('.space-y-6');
+        if (parentSection.querySelector('div').textContent.includes('Kandidat Ketua')) {
+          modalJurusan.textContent = "Teknik Informatika - Semester 4";
+        } else {
+          modalJurusan.textContent = "Teknik Informatika - Semester 2";
+        }
+        
+        modal.style.display = 'flex';
+      }
 
-  // Fungsi untuk konfirmasi voting
-  function confirmVoting(k, w) {
-    const ketuaName = k.parentElement.querySelector('h3').textContent;
-    const wakilName = w.parentElement.querySelector('h3').textContent;
-    
-    Swal.fire({
-      title: 'Konfirmasi Pilihan Anda',
-      html: `<div class="text-center p-4">
-              <div class="text-xl font-bold mb-4 text-blue-800">Anda memilih:</div>
-              
-              <div class="flex flex-col md:flex-row justify-center items-center gap-6 mb-6">
-                <!-- Kandidat Ketua -->
-                <div class="bg-white p-5 rounded-xl shadow-md border border-blue-100 w-full max-w-xs transform transition hover:scale-[1.02]">
-                  <div class="flex justify-center mb-3">
-                    <div class="w-24 h-24 rounded-full overflow-hidden border-3 border-yellow-400 shadow-lg">
-                      <img src="${k.parentElement.querySelector('img').src}" 
-                           class="w-full h-full object-cover"
-                           alt="Foto Kandidat Ketua">
+      // Fungsi untuk konfirmasi voting
+      function confirmVoting(k, w) {
+        const ketuaName = k.parentElement.querySelector('h3').textContent;
+        const wakilName = w.parentElement.querySelector('h3').textContent;
+        
+        Swal.fire({
+          title: 'Konfirmasi Pilihan Anda',
+          html: `<div class="text-center p-4">
+                  <div class="text-xl font-bold mb-4 text-blue-800">Anda memilih:</div>
+                  
+                  <div class="flex flex-col md:flex-row justify-center items-center gap-6 mb-6">
+                    <!-- Kandidat Ketua -->
+                    <div class="bg-white p-5 rounded-xl shadow-md border border-blue-100 w-full max-w-xs transform transition hover:scale-[1.02]">
+                      <div class="flex justify-center mb-3">
+                        <div class="w-24 h-24 rounded-full overflow-hidden border-3 border-yellow-400 shadow-lg">
+                          <img src="${k.parentElement.querySelector('img').src}" 
+                               class="w-full h-full object-cover"
+                               alt="Foto Kandidat Ketua">
+                        </div>
+                      </div>
+                      
+                      <div class="mt-3">
+                        <p class="font-bold text-lg text-gray-800">${ketuaName}</p>
+                        <p class="text-blue-600 font-medium mt-1">Ketua HMIF</p>
+                        <div class="mt-2">
+                          <span class="inline-flex items-center bg-yellow-50 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">
+                            <i class="fas fa-layer-group mr-1 text-yellow-600"></i> Semester 4
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Plus Icon -->
+                    <div class="hidden md:flex items-center justify-center text-3xl text-blue-500">
+                      <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="md:hidden my-4 text-blue-500">
+                      <i class="fas fa-arrow-down text-xl"></i>
+                    </div>
+                    
+                    <!-- Kandidat Wakil -->
+                    <div class="bg-white p-5 rounded-xl shadow-md border border-blue-100 w-full max-w-xs transform transition hover:scale-[1.02]">
+                      <div class="flex justify-center mb-3">
+                        <div class="w-24 h-24 rounded-full overflow-hidden border-3 border-blue-400 shadow-lg">
+                          <img src="${w.parentElement.querySelector('img').src}" 
+                               class="w-full h-full object-cover"
+                               alt="Foto Kandidat Wakil">
+                        </div>
+                      </div>
+                      
+                      <div class="mt-3">
+                        <p class="font-bold text-lg text-gray-800">${wakilName}</p>
+                        <p class="text-blue-600 font-medium mt-1">Wakil Ketua HMIF</p>
+                        <div class="mt-2">
+                          <span class="inline-flex items-center bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+                            <i class="fas fa-layer-group mr-1 text-blue-600"></i> Semester 2
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
-                  <div class="mt-3">
-                    <p class="font-bold text-lg text-gray-800">${ketuaName}</p>
-                    <p class="text-blue-600 font-medium mt-1">Ketua HMIF</p>
-                    <div class="mt-2">
-                      <span class="inline-flex items-center bg-yellow-50 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">
-                        <i class="fas fa-layer-group mr-1 text-yellow-600"></i> Semester 4
-                      </span>
-                    </div>
+                  <div class="bg-blue-50 rounded-lg p-4 border border-blue-100 mt-4">
+                    <p class="text-blue-800 font-medium flex items-center justify-center">
+                      <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                      Pastikan pilihan Anda sudah tepat
+                    </p>
+                    <p class="text-gray-600 mt-2 text-sm">
+                      Anda hanya dapat memilih satu kali dan tidak dapat mengubah setelah mengirim
+                    </p>
                   </div>
-                </div>
-                
-                <!-- Plus Icon -->
-                <div class="hidden md:flex items-center justify-center text-3xl text-blue-500">
-                  <i class="fas fa-plus-circle"></i>
-                </div>
-                <div class="md:hidden my-4 text-blue-500">
-                  <i class="fas fa-arrow-down text-xl"></i>
-                </div>
-                
-                <!-- Kandidat Wakil -->
-                <div class="bg-white p-5 rounded-xl shadow-md border border-blue-100 w-full max-w-xs transform transition hover:scale-[1.02]">
-                  <div class="flex justify-center mb-3">
-                    <div class="w-24 h-24 rounded-full overflow-hidden border-3 border-blue-400 shadow-lg">
-                      <img src="${w.parentElement.querySelector('img').src}" 
-                           class="w-full h-full object-cover"
-                           alt="Foto Kandidat Wakil">
-                    </div>
-                  </div>
-                  
-                  <div class="mt-3">
-                    <p class="font-bold text-lg text-gray-800">${wakilName}</p>
-                    <p class="text-blue-600 font-medium mt-1">Wakil Ketua HMIF</p>
-                    <div class="mt-2">
-                      <span class="inline-flex items-center bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
-                        <i class="fas fa-layer-group mr-1 text-blue-600"></i> Semester 2
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="bg-blue-50 rounded-lg p-4 border border-blue-100 mt-4">
-                <p class="text-blue-800 font-medium flex items-center justify-center">
-                  <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                  Pastikan pilihan Anda sudah tepat
-                </p>
-                <p class="text-gray-600 mt-2 text-sm">
-                  Anda hanya dapat memilih satu kali dan tidak dapat mengubah setelah mengirim
-                </p>
-              </div>
-            </div>`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Ya, Kirim Suara',
-      confirmButtonColor: '#3b82f6',
-      cancelButtonText: 'Periksa Kembali',
-      reverseButtons: true,
-      customClass: {
-        popup: 'rounded-2xl',
-        title: 'text-xl font-bold text-gray-800',
-        htmlContainer: 'text-left',
-        actions: 'mt-4'
-      },
-      buttonsStyling: false,
-      showClass: {
-        popup: 'animate__animated animate__fadeIn animate__faster'
-      },
-      hideClass: {
-        popup: 'animate__animated animate__fadeOut animate__faster'
+                </div>`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: '<i class="fas fa-paper-plane mr-2"></i> Kirim Suara',
+          cancelButtonText: '<i class="fas fa-undo mr-2"></i> Periksa Kembali',
+          reverseButtons: true,
+          customClass: {
+            popup: 'rounded-2xl',
+            title: 'text-xl font-bold text-gray-800',
+            htmlContainer: 'text-left',
+            confirmButton: 'custom-swal-confirm-btn',
+            cancelButton: 'custom-swal-cancel-btn',
+            actions: 'swal2-actions'
+          },
+          buttonsStyling: false,
+          showClass: {
+            popup: 'animate__animated animate__fadeIn animate__faster'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOut animate__faster'
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Tampilkan animasi loading sebelum submit
+            Swal.fire({
+              title: 'Mengirim Suara...',
+              html: 'Sedang memproses pilihan Anda',
+              allowOutsideClick: false,
+              showConfirmButton: false,
+              willOpen: () => {
+                Swal.showLoading();
+              }
+            });
+            
+            // Beri jeda 1.5 detik sebelum benar-benar submit
+            setTimeout(() => {
+              document.getElementById('voteForm').submit();
+            }, 1500);
+          }
+        });
       }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Submit form
-        document.getElementById('voteForm').submit();
-      }
-    });
-  }
 
-
-  // Update waktu pertama kali
-  updateTime();
-  
-  // Set interval update waktu setiap detik
-  setInterval(updateTime, 1000);
+      // Update waktu pertama kali
+      updateTime();
+      
+      // Set interval update waktu setiap detik
+      setInterval(updateTime, 1000);
   
   <?php if ($sudahVote): ?>
     // Kode untuk pengguna yang sudah vote
