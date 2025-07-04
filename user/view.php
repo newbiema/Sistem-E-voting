@@ -704,7 +704,7 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
         </li>
         <li class="flex items-center gap-3">
           <i class="fab fa-whatsapp text-green-400"></i>
-          <a href="https://wa.me/6281234567890" target="_blank" class="hover:underline">+62 878-9221-9615</a>
+          <a href="https://wa.me/6287892219615" target="_blank" class="hover:underline">+62 878-9221-9615</a>
         </li>
       </ul>
     </div>
@@ -719,275 +719,366 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Fungsi untuk memperbarui waktu
-      function updateTime() {
-        const now = new Date();
-        
-        // Format waktu untuk header
-        const headerOptions = {
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric',
-          hour: '2-digit', 
-          minute: '2-digit', 
-          second: '2-digit',
-          hour12: false,
-          timeZone: 'Asia/Jakarta'
-        };
-        const formattedHeader = now.toLocaleString('id-ID', headerOptions);
-        document.getElementById('live-time').textContent = formattedHeader + ' WIB';
-        
-        // Format waktu untuk footer
-        const tanggalOptions = {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-          timeZone: 'Asia/Jakarta'
-        };
-        const jamOptions = {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false,
-          timeZone: 'Asia/Jakarta'
-        };
+  document.addEventListener('DOMContentLoaded', function() {
+  // Variabel global untuk chart
+  let chartKetua = null;
+  let chartWakil = null;
+  
+  // Fungsi untuk memperbarui waktu
+  function updateTime() {
+    const now = new Date();
+    
+    // Format waktu untuk header
+    const headerOptions = {
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Jakarta'
+    };
+    const formattedHeader = now.toLocaleString('id-ID', headerOptions);
+    document.getElementById('live-time').textContent = formattedHeader + ' WIB';
+    
+    // Format waktu untuk footer
+    const tanggalOptions = {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Asia/Jakarta'
+    };
+    const jamOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Jakarta'
+    };
 
-        const tanggal = now.toLocaleDateString('id-ID', tanggalOptions);
-        const jam = now.toLocaleTimeString('id-ID', jamOptions);
+    const tanggal = now.toLocaleDateString('id-ID', tanggalOptions);
+    const jam = now.toLocaleTimeString('id-ID', jamOptions);
 
-        document.getElementById('tanggal-sekarang').textContent = `Tanggal: ${tanggal}`;
-        document.getElementById('jam-sekarang').textContent = `Jam: ${jam} WIB`;
+    document.getElementById('tanggal-sekarang').textContent = `Tanggal: ${tanggal}`;
+    document.getElementById('jam-sekarang').textContent = `Jam: ${jam} WIB`;
+  }
+
+  // Fungsi untuk menampilkan modal kandidat
+  function showCandidateModal(btn) {
+    const modalFoto = document.getElementById('modalFoto');
+    const modalNama = document.getElementById('modalNama');
+    const modalVisi = document.getElementById('modalVisi');
+    const modalJurusan = document.getElementById('modalJurusan');
+    const modal = document.getElementById('candidateModal');
+    
+    modalFoto.src = btn.dataset.foto;
+    modalNama.textContent = btn.dataset.name;
+    modalVisi.innerHTML = btn.dataset.visi.replace(/\n/g, '<br>');
+    
+    // Tentukan jurusan dan semester
+    const parentSection = btn.closest('.space-y-6');
+    if (parentSection.querySelector('div').textContent.includes('Kandidat Ketua')) {
+      modalJurusan.textContent = "Teknik Informatika - Semester 4";
+    } else {
+      modalJurusan.textContent = "Teknik Informatika - Semester 2";
+    }
+    
+    modal.style.display = 'flex';
+  }
+
+  // Fungsi untuk konfirmasi voting
+  function confirmVoting(k, w) {
+    const ketuaName = k.parentElement.querySelector('h3').textContent;
+    const wakilName = w.parentElement.querySelector('h3').textContent;
+    
+    Swal.fire({
+      title: 'Konfirmasi Pilihan Anda',
+      html: `<div class="text-center p-4">
+              <div class="text-xl font-bold mb-4 text-blue-800">Anda memilih:</div>
+              
+              <div class="flex flex-col md:flex-row justify-center items-center gap-6 mb-6">
+                <!-- Kandidat Ketua -->
+                <div class="bg-white p-5 rounded-xl shadow-md border border-blue-100 w-full max-w-xs transform transition hover:scale-[1.02]">
+                  <div class="flex justify-center mb-3">
+                    <div class="w-24 h-24 rounded-full overflow-hidden border-3 border-yellow-400 shadow-lg">
+                      <img src="${k.parentElement.querySelector('img').src}" 
+                           class="w-full h-full object-cover"
+                           alt="Foto Kandidat Ketua">
+                    </div>
+                  </div>
+                  
+                  <div class="mt-3">
+                    <p class="font-bold text-lg text-gray-800">${ketuaName}</p>
+                    <p class="text-blue-600 font-medium mt-1">Ketua HMIF</p>
+                    <div class="mt-2">
+                      <span class="inline-flex items-center bg-yellow-50 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">
+                        <i class="fas fa-layer-group mr-1 text-yellow-600"></i> Semester 4
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Plus Icon -->
+                <div class="hidden md:flex items-center justify-center text-3xl text-blue-500">
+                  <i class="fas fa-plus-circle"></i>
+                </div>
+                <div class="md:hidden my-4 text-blue-500">
+                  <i class="fas fa-arrow-down text-xl"></i>
+                </div>
+                
+                <!-- Kandidat Wakil -->
+                <div class="bg-white p-5 rounded-xl shadow-md border border-blue-100 w-full max-w-xs transform transition hover:scale-[1.02]">
+                  <div class="flex justify-center mb-3">
+                    <div class="w-24 h-24 rounded-full overflow-hidden border-3 border-blue-400 shadow-lg">
+                      <img src="${w.parentElement.querySelector('img').src}" 
+                           class="w-full h-full object-cover"
+                           alt="Foto Kandidat Wakil">
+                    </div>
+                  </div>
+                  
+                  <div class="mt-3">
+                    <p class="font-bold text-lg text-gray-800">${wakilName}</p>
+                    <p class="text-blue-600 font-medium mt-1">Wakil Ketua HMIF</p>
+                    <div class="mt-2">
+                      <span class="inline-flex items-center bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
+                        <i class="fas fa-layer-group mr-1 text-blue-600"></i> Semester 2
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bg-blue-50 rounded-lg p-4 border border-blue-100 mt-4">
+                <p class="text-blue-800 font-medium flex items-center justify-center">
+                  <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                  Pastikan pilihan Anda sudah tepat
+                </p>
+                <p class="text-gray-600 mt-2 text-sm">
+                  Anda hanya dapat memilih satu kali dan tidak dapat mengubah setelah mengirim
+                </p>
+              </div>
+            </div>`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fas fa-paper-plane mr-2"></i> Kirim Suara',
+      cancelButtonText: '<i class="fas fa-undo mr-2"></i> Periksa Kembali',
+      reverseButtons: true,
+      customClass: {
+        popup: 'rounded-2xl',
+        title: 'text-xl font-bold text-gray-800',
+        htmlContainer: 'text-left',
+        confirmButton: 'custom-swal-confirm-btn',
+        cancelButton: 'custom-swal-cancel-btn',
+        actions: 'swal2-actions'
+      },
+      buttonsStyling: false,
+      showClass: {
+        popup: 'animate__animated animate__fadeIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__fadeOut animate__faster'
       }
-
-      // Fungsi untuk menampilkan modal kandidat
-      function showCandidateModal(btn) {
-        const modalFoto = document.getElementById('modalFoto');
-        const modalNama = document.getElementById('modalNama');
-        const modalVisi = document.getElementById('modalVisi');
-        const modalJurusan = document.getElementById('modalJurusan');
-        const modal = document.getElementById('candidateModal');
-        
-        modalFoto.src = btn.dataset.foto;
-        modalNama.textContent = btn.dataset.name;
-        modalVisi.innerHTML = btn.dataset.visi.replace(/\n/g, '<br>');
-        
-        // Tentukan jurusan dan semester
-        const parentSection = btn.closest('.space-y-6');
-        if (parentSection.querySelector('div').textContent.includes('Kandidat Ketua')) {
-          modalJurusan.textContent = "Teknik Informatika - Semester 4";
-        } else {
-          modalJurusan.textContent = "Teknik Informatika - Semester 2";
-        }
-        
-        modal.style.display = 'flex';
-      }
-
-      // Fungsi untuk konfirmasi voting
-      function confirmVoting(k, w) {
-        const ketuaName = k.parentElement.querySelector('h3').textContent;
-        const wakilName = w.parentElement.querySelector('h3').textContent;
-        
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Tampilkan animasi loading sebelum submit
         Swal.fire({
-          title: 'Konfirmasi Pilihan Anda',
-          html: `<div class="text-center p-4">
-                  <div class="text-xl font-bold mb-4 text-blue-800">Anda memilih:</div>
-                  
-                  <div class="flex flex-col md:flex-row justify-center items-center gap-6 mb-6">
-                    <!-- Kandidat Ketua -->
-                    <div class="bg-white p-5 rounded-xl shadow-md border border-blue-100 w-full max-w-xs transform transition hover:scale-[1.02]">
-                      <div class="flex justify-center mb-3">
-                        <div class="w-24 h-24 rounded-full overflow-hidden border-3 border-yellow-400 shadow-lg">
-                          <img src="${k.parentElement.querySelector('img').src}" 
-                               class="w-full h-full object-cover"
-                               alt="Foto Kandidat Ketua">
-                        </div>
-                      </div>
-                      
-                      <div class="mt-3">
-                        <p class="font-bold text-lg text-gray-800">${ketuaName}</p>
-                        <p class="text-blue-600 font-medium mt-1">Ketua HMIF</p>
-                        <div class="mt-2">
-                          <span class="inline-flex items-center bg-yellow-50 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">
-                            <i class="fas fa-layer-group mr-1 text-yellow-600"></i> Semester 4
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Plus Icon -->
-                    <div class="hidden md:flex items-center justify-center text-3xl text-blue-500">
-                      <i class="fas fa-plus-circle"></i>
-                    </div>
-                    <div class="md:hidden my-4 text-blue-500">
-                      <i class="fas fa-arrow-down text-xl"></i>
-                    </div>
-                    
-                    <!-- Kandidat Wakil -->
-                    <div class="bg-white p-5 rounded-xl shadow-md border border-blue-100 w-full max-w-xs transform transition hover:scale-[1.02]">
-                      <div class="flex justify-center mb-3">
-                        <div class="w-24 h-24 rounded-full overflow-hidden border-3 border-blue-400 shadow-lg">
-                          <img src="${w.parentElement.querySelector('img').src}" 
-                               class="w-full h-full object-cover"
-                               alt="Foto Kandidat Wakil">
-                        </div>
-                      </div>
-                      
-                      <div class="mt-3">
-                        <p class="font-bold text-lg text-gray-800">${wakilName}</p>
-                        <p class="text-blue-600 font-medium mt-1">Wakil Ketua HMIF</p>
-                        <div class="mt-2">
-                          <span class="inline-flex items-center bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
-                            <i class="fas fa-layer-group mr-1 text-blue-600"></i> Semester 2
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="bg-blue-50 rounded-lg p-4 border border-blue-100 mt-4">
-                    <p class="text-blue-800 font-medium flex items-center justify-center">
-                      <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                      Pastikan pilihan Anda sudah tepat
-                    </p>
-                    <p class="text-gray-600 mt-2 text-sm">
-                      Anda hanya dapat memilih satu kali dan tidak dapat mengubah setelah mengirim
-                    </p>
-                  </div>
-                </div>`,
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: '<i class="fas fa-paper-plane mr-2"></i> Kirim Suara',
-          cancelButtonText: '<i class="fas fa-undo mr-2"></i> Periksa Kembali',
-          reverseButtons: true,
-          customClass: {
-            popup: 'rounded-2xl',
-            title: 'text-xl font-bold text-gray-800',
-            htmlContainer: 'text-left',
-            confirmButton: 'custom-swal-confirm-btn',
-            cancelButton: 'custom-swal-cancel-btn',
-            actions: 'swal2-actions'
-          },
-          buttonsStyling: false,
-          showClass: {
-            popup: 'animate__animated animate__fadeIn animate__faster'
-          },
-          hideClass: {
-            popup: 'animate__animated animate__fadeOut animate__faster'
-          }
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // Tampilkan animasi loading sebelum submit
-            Swal.fire({
-              title: 'Mengirim Suara...',
-              html: 'Sedang memproses pilihan Anda',
-              allowOutsideClick: false,
-              showConfirmButton: false,
-              willOpen: () => {
-                Swal.showLoading();
-              }
-            });
-            
-            // Beri jeda 1.5 detik sebelum benar-benar submit
-            setTimeout(() => {
-              document.getElementById('voteForm').submit();
-            }, 1500);
-          }
-        });
-      }
-
-      // Update waktu pertama kali
-      updateTime();
-      
-      // Set interval update waktu setiap detik
-      setInterval(updateTime, 1000);
-  
-  <?php if ($sudahVote): ?>
-    // Kode untuk pengguna yang sudah vote
-    fetch('vote_results.php')
-      .then(response => response.json())
-      .then(data => {
-        // Chart untuk Ketua
-        const ctxK = document.getElementById('chartKetua').getContext('2d');
-        new Chart(ctxK, {
-          type: 'doughnut',
-          data: {
-            labels: data.labels_ketua,
-            datasets: [{
-              data: data.data_ketua,
-              backgroundColor: ['#3b82f6', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  font: { size: 12 },
-                  padding: 15
-                }
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw || 0;
-                    const total = context.chart.getDatasetMeta(0).total;
-                    const percentage = Math.round((value / total) * 100);
-                    return `${label}: ${value} suara (${percentage}%)`;
-                  }
-                }
-              }
-            }
+          title: 'Mengirim Suara...',
+          html: 'Sedang memproses pilihan Anda',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          willOpen: () => {
+            Swal.showLoading();
           }
         });
         
-        // Chart untuk Wakil
-        const ctxW = document.getElementById('chartWakil').getContext('2d');
-        new Chart(ctxW, {
-          type: 'doughnut',
-          data: {
-            labels: data.labels_wakil,
-            datasets: [{
-              data: data.data_wakil,
-              backgroundColor: ['#3b82f6', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  font: { size: 12 },
-                  padding: 15
-                }
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw || 0;
-                    const total = context.chart.getDatasetMeta(0).total;
-                    const percentage = Math.round((value / total) * 100);
-                    return `${label}: ${value} suara (${percentage}%)`;
-                  }
+        // Beri jeda 1.5 detik sebelum benar-benar submit
+        setTimeout(() => {
+          document.getElementById('voteForm').submit();
+        }, 1500);
+      }
+    });
+  }
+
+  // Fungsi untuk memperbarui detail perolehan suara
+  function updateDetailResults(data) {
+    // Update statistik partisipasi
+    document.querySelector('.stat-card:nth-child(1) .text-4xl').textContent = data.totalPemilih;
+    document.querySelector('.stat-card:nth-child(3) .text-4xl').textContent = 
+      Math.round((data.totalPemilih / data.totalMahasiswa) * 100) + '%';
+    document.querySelector('.progress-fill').style.width = 
+      (data.totalPemilih / data.totalMahasiswa * 100) + '%';
+
+    // Update detail perolehan suara Ketua
+    const ketuaContainer = document.querySelector('.bg-blue-50.rounded-2xl.p-5:first-child .space-y-4');
+    ketuaContainer.innerHTML = ''; // Kosongkan dulu
+    
+    <?php foreach ($ketua as $row): ?>
+    const suaraKetua<?php echo $row['id']; ?> = data.suaraKetua[<?php echo $row['id']; ?>] || 0;
+    const persentaseKetua<?php echo $row['id']; ?> = data.totalPemilih > 0 ? 
+      Math.round((suaraKetua<?php echo $row['id']; ?> / data.totalPemilih) * 100) : 0;
+    
+    ketuaContainer.innerHTML += `
+      <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm ketua-<?php echo $row['id']; ?>">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-200">
+            <img src="../<?php echo htmlspecialchars($row['foto']); ?>" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <div class="font-bold"><?php echo htmlspecialchars($row['nama']); ?></div>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="font-bold text-blue-800 suara">${suaraKetua<?php echo $row['id']; ?>} suara</div>
+          <div class="text-sm text-gray-600 persentase">${persentaseKetua<?php echo $row['id']; ?>}%</div>
+        </div>
+      </div>
+    `;
+    <?php endforeach; ?>
+
+    // Update detail perolehan suara Wakil
+    const wakilContainer = document.querySelector('.bg-blue-50.rounded-2xl.p-5:last-child .space-y-4');
+    wakilContainer.innerHTML = ''; // Kosongkan dulu
+    
+    <?php foreach ($wakil as $row): ?>
+    const suaraWakil<?php echo $row['id']; ?> = data.suaraWakil[<?php echo $row['id']; ?>] || 0;
+    const persentaseWakil<?php echo $row['id']; ?> = data.totalPemilih > 0 ? 
+      Math.round((suaraWakil<?php echo $row['id']; ?> / data.totalPemilih) * 100) : 0;
+    
+    wakilContainer.innerHTML += `
+      <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm wakil-<?php echo $row['id']; ?>">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-200">
+            <img src="../<?php echo htmlspecialchars($row['foto']); ?>" class="w-full h-full object-cover">
+          </div>
+          <div>
+            <div class="font-bold"><?php echo htmlspecialchars($row['nama']); ?></div>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="font-bold text-blue-800 suara">${suaraWakil<?php echo $row['id']; ?>} suara</div>
+          <div class="text-sm text-gray-600 persentase">${persentaseWakil<?php echo $row['id']; ?>}%</div>
+        </div>
+      </div>
+    `;
+    <?php endforeach; ?>
+  }
+
+  // Fungsi untuk memperbarui chart
+  function updateCharts(data) {
+    // Update chart Ketua jika sudah ada
+    if (chartKetua) {
+      chartKetua.data.datasets[0].data = Object.values(data.suaraKetua);
+      chartKetua.update();
+    } else {
+      // Inisialisasi chart Ketua pertama kali
+      const ctxK = document.getElementById('chartKetua').getContext('2d');
+      chartKetua = new Chart(ctxK, {
+        type: 'doughnut',
+        data: {
+          labels: <?php echo json_encode(array_column($ketua, 'nama')); ?>,
+          datasets: [{
+            data: Object.values(data.suaraKetua),
+            backgroundColor: ['#3b82f6', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: { size: 12 },
+                padding: 15
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.chart.getDatasetMeta(0).total;
+                  const percentage = Math.round((value / total) * 100);
+                  return `${label}: ${value} suara (${percentage}%)`;
                 }
               }
             }
           }
-        });
+        }
       });
+    }
+    
+    // Update chart Wakil jika sudah ada
+    if (chartWakil) {
+      chartWakil.data.datasets[0].data = Object.values(data.suaraWakil);
+      chartWakil.update();
+    } else {
+      // Inisialisasi chart Wakil pertama kali
+      const ctxW = document.getElementById('chartWakil').getContext('2d');
+      chartWakil = new Chart(ctxW, {
+        type: 'doughnut',
+        data: {
+          labels: <?php echo json_encode(array_column($wakil, 'nama')); ?>,
+          datasets: [{
+            data: Object.values(data.suaraWakil),
+            backgroundColor: ['#3b82f6', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: { size: 12 },
+                padding: 15
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.chart.getDatasetMeta(0).total;
+                  const percentage = Math.round((value / total) * 100);
+                  return `${label}: ${value} suara (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  // Fungsi untuk memperbarui hasil voting secara realtime
+  async function updateVotingResults() {
+    try {
+      const response = await fetch('realtime_results.php');
+      const data = await response.json();
+      
+      // Update semua komponen
+      updateCharts(data);
+      updateDetailResults(data);
+      
+    } catch (error) {
+      console.error('Error fetching voting results:', error);
+    }
+  }
+
+  // Update waktu pertama kali
+  updateTime();
   
-  <?php else: ?>
-    // Kode untuk pengguna yang belum vote
-    // Fitur Pencarian
-    const searchInput = document.getElementById('searchInput');
+  // Set interval update waktu setiap detik
+  setInterval(updateTime, 1000);
+
+  // Fitur Pencarian
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
     searchInput.addEventListener('input', function() {
       const searchTerm = this.value.toLowerCase();
       const cards = document.querySelectorAll('.candidate-card');
@@ -997,10 +1088,11 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
         card.style.display = name.includes(searchTerm) ? 'flex' : 'none';
       });
     });
-    
-    // Modal Detail Kandidat
-    const modal = document.getElementById('candidateModal');
-    
+  }
+  
+  // Modal Detail Kandidat
+  const modal = document.getElementById('candidateModal');
+  if (modal) {
     // Event listener untuk tombol detail
     document.querySelectorAll('.detail-btn').forEach(btn => {
       btn.addEventListener('click', () => showCandidateModal(btn));
@@ -1015,9 +1107,11 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
     window.addEventListener('click', (event) => {
       if (event.target === modal) modal.style.display = 'none';
     });
-    
-    // Form Voting
-    const voteForm = document.getElementById('voteForm');
+  }
+  
+  // Form Voting
+  const voteForm = document.getElementById('voteForm');
+  if (voteForm) {
     voteForm.addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -1038,6 +1132,15 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
       // Tampilkan konfirmasi voting
       confirmVoting(k, w);
     });
+  }
+  
+  // Jika sudah vote, jalankan update realtime
+  <?php if ($sudahVote): ?>
+    // Panggil pertama kali
+    updateVotingResults();
+    
+    // Set interval untuk update setiap 5 detik
+    setInterval(updateVotingResults, 5000);
   <?php endif; ?>
 });
 </script>
