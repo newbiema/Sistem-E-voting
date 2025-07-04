@@ -8,6 +8,29 @@ if (!isset($_SESSION['admin_login'])) {
   exit();
 }
 
+// Handle delete all request
+if (isset($_POST['delete_all'])) {
+  // First delete votes to maintain referential integrity
+  $delete_votes = mysqli_query($conn, "DELETE FROM votes");
+  if (!$delete_votes) {
+    $_SESSION['error'] = "Gagal menghapus data voting: " . mysqli_error($conn);
+    header("Location: daftar_user.php");
+    exit();
+  }
+  
+  // Then delete users
+  $delete_users = mysqli_query($conn, "DELETE FROM users");
+  if ($delete_users) {
+    $_SESSION['success'] = "Semua user berhasil dihapus!";
+    header("Location: daftar_user.php");
+    exit();
+  } else {
+    $_SESSION['error'] = "Gagal menghapus semua user: " . mysqli_error($conn);
+    header("Location: daftar_user.php");
+    exit();
+  }
+}
+
 // voter_list.php - Perbaikan query
 $query = "SELECT u.id, u.nim, u.nama, 
           (CASE WHEN v.id IS NOT NULL THEN 'Sudah Memilih' ELSE 'Belum Memilih' END) AS status_vote
@@ -173,7 +196,7 @@ $not_voted = $total_voters - $voted_count;
         </div>
       </div>
       
-<!-- Voter List -->
+      <!-- Voter List -->
       <div class="bg-white rounded-xl shadow">
         <div class="p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <h2 class="text-lg font-semibold"><i class="fas fa-list text-indigo-600 mr-2"></i>Daftar Pemilih</h2>
@@ -182,6 +205,14 @@ $not_voted = $total_voters - $voted_count;
               <i class="fas fa-search search-icon"></i>
               <input type="text" placeholder="Cari nama atau NIM..." class="search-input w-full md:w-64 border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
             </div>
+              <?php if ($total_voters > 0) : ?>
+                <form id="deleteAllForm" action="" method="POST">
+                  <button type="button" onclick="confirmDeleteAll()" class="text-sm bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2">
+                    <i class="fas fa-trash-alt"></i> Hapus Semua
+                  </button>
+                  <input type="hidden" name="delete_all" value="1">
+                </form>
+              <?php endif; ?>
             <div class="block md:hidden">
               <a href="admin_create_user.php" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow flex items-center gap-2">
                 <i class="fas fa-user-plus"></i>
@@ -198,7 +229,7 @@ $not_voted = $total_voters - $voted_count;
                 <th>NIM</th>
                 <th>Nama</th>
                 <th>Status Pemilihan</th>
-                <th class="rounded-tr-lg">Aksi</th> <!-- Kolom baru -->
+                <th class="rounded-tr-lg">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -219,9 +250,8 @@ $not_voted = $total_voters - $voted_count;
                         <a href="admin_edit_user.php?nim=<?php echo $row['nim']; ?>" class="edit-button">
                           <i class="fas fa-edit"></i>
                         </a>
-
                         
-                        <!-- Tombol Delete (diubah) -->
+                        <!-- Tombol Delete -->
                         <form action="delete_user.php" method="POST" class="delete-form">
                           <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
                           <button type="button" onclick="confirmDelete(event, this.closest('form'))" class="delete-button">
@@ -304,10 +334,29 @@ $not_voted = $total_voters - $voted_count;
         }
       });
     }
-  </script>
+
+    // SweetAlert untuk konfirmasi delete all
+    function confirmDeleteAll() {
+      Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Semua user akan dihapus permanen! Tindakan ini tidak dapat dibatalkan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus semua!',
+        cancelButtonText: 'Batal',
+        dangerMode: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('deleteAllForm').submit();
+        }
+      });
+    }
+      </script>
 
   <?php
-  // Tampilkan notifikasi - DIPINDAHKAN KE BAWAH
+  // Tampilkan notifikasi
   if (isset($_SESSION['success'])) {
     echo '<script>
       Swal.fire({
@@ -333,6 +382,5 @@ $not_voted = $total_voters - $voted_count;
     unset($_SESSION['error']);
   }
   ?>
-  </script>
 </body>
 </html>

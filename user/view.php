@@ -8,6 +8,21 @@ if (!isset($_SESSION['nim'])) {
 }
 $nim = $_SESSION['nim'];
 
+
+// Query untuk mengambil data nama berdasarkan nim
+$query = "SELECT nama FROM users WHERE nim = '$nim'";
+$result = mysqli_query($conn, $query);
+
+// Cek apakah query berhasil
+if ($result && mysqli_num_rows($result) > 0) {
+    // Ambil data nama dari hasil query
+    $row = mysqli_fetch_assoc($result);
+    $nama = $row['nama']; // Menyimpan nama dalam variabel $nama
+} else {
+    $nama = "Nama tidak ditemukan"; // Jika tidak ada hasil
+}
+
+
 // Cek status voting user
 $voteRow = mysqli_fetch_assoc(mysqli_query($conn, "SELECT candidate_id_ketua, candidate_id_wakil FROM votes WHERE nim='$nim' LIMIT 1"));
 $sudahVote = $voteRow !== null;
@@ -51,8 +66,7 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-    /* ... (semua style sebelumnya tetap sama) ... */
-    
+
     /* Style khusus untuk tombol SweetAlert */
     .custom-swal-confirm-btn {
       background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
@@ -384,7 +398,15 @@ while ($row = mysqli_fetch_assoc($resultWakil)) {
             <i class="fas <?php echo $sudahVote ? 'fa-check-circle' : 'fa-exclamation-circle'; ?> mr-2"></i>
             <?php echo $sudahVote ? 'Sudah Memilih' : 'Belum Memilih'; ?>
           </div>
-          <p class="text-sm text-blue-100 mt-3 font-medium bg-blue-900/30 px-3 py-1 rounded-full">NIM: <?php echo htmlspecialchars($nim); ?></p>
+          <p class="text-sm text-blue-100 mt-3 font-medium bg-blue-900/30 px-3 py-1 rounded-full flex items-center gap-2">
+              <i class="fas fa-id-card-alt text-blue-500"></i> 
+              NIM: <?php echo htmlspecialchars($nim); ?>
+          </p>
+          <p class="text-sm text-blue-100 mt-3 font-medium bg-blue-900/30 px-3 py-1 rounded-full flex items-center gap-2">
+              <i class="fas fa-user text-blue-500"></i> 
+              NAMA: <?php echo htmlspecialchars($nama); ?>
+          </p>
+
         </div>
       </div>
       
